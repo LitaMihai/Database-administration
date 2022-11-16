@@ -1,26 +1,27 @@
 package states;
 
-import misc.NewPage;
+import stateDesign.Package;
+import stateDesign.PackageState;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 
-public class LoginState extends JFrame implements ActionListener, KeyListener {
+public class LoginState extends JFrame implements ActionListener, KeyListener, PackageState {
     JButton submitButton;
+    JButton guestButton;
     JLabel userLabel, passLabel, messageLabel, loginLabel;
     final JTextField  userInput;
     final JPasswordField passInput;
     JCheckBox showPassword;
-    // private Color backgroundColor = new Color(43, 45, 66);
-    private Color backgroundColor = new Color(0, 0, 128);
-    private Color textColor = new Color(237, 242, 244);
-    private Color errorColor = new Color(239, 35, 60);
-    // private Color inputColor = new Color(141, 153, 174);
-    private Color inputColor = new Color(153, 153, 153);
+    final private Color backgroundColor = new Color(0, 10, 20);
+    final private Color textColor = new Color(237, 242, 244);
+    final private Color errorColor = new Color(200, 8, 21);
+    final private Color inputColor = new Color(0, 150, 170);
 
-    public LoginState() throws IOException {
+    private boolean signedInAsAdmin;
+
+    public LoginState(){
         this.loginLabel = new JLabel();
         this.messageLabel = new JLabel();
         this.userInput = new JTextField();
@@ -29,6 +30,7 @@ public class LoginState extends JFrame implements ActionListener, KeyListener {
         this.passLabel = new JLabel();
         this.showPassword = new JCheckBox();
         this.submitButton =  new JButton();
+        this.guestButton = new JButton();
 
         InitFrame();
         InitVariables();
@@ -42,18 +44,15 @@ public class LoginState extends JFrame implements ActionListener, KeyListener {
         });
     }
 
-
-
     private void onEnterPress(){
         String userValue = this.userInput.getText();
         String passValue = String.valueOf(this.passInput.getPassword());
 
         if(userValue.equals("sa") && passValue.equals("ed308")){
-            NewPage page = new NewPage();
-            page.setVisible(true);
+            this.signedInAsAdmin = true;
 
-            JLabel welcome_label = new JLabel("Welcome: " + userValue);
-            page.getContentPane().add(welcome_label);
+            // Next State
+            this.next(Package.pkg);
         }
         else{
             this.messageLabel.setText("Invalid username or password!");
@@ -73,7 +72,7 @@ public class LoginState extends JFrame implements ActionListener, KeyListener {
         this.setVisible(true);
     }
 
-    private void InitVariables() throws IOException {
+    private void InitVariables() {
         RepositionGUI();
 
         this.getContentPane().setBackground(this.backgroundColor);
@@ -121,6 +120,15 @@ public class LoginState extends JFrame implements ActionListener, KeyListener {
         this.submitButton.setContentAreaFilled(false);
         this.submitButton.setFont(new Font("Poppins Medium", Font.BOLD, 30));
         this.submitButton.setForeground(this.textColor);
+
+        this.guestButton.setText("Sign in as guest");
+        this.guestButton.addActionListener(this);
+        this.guestButton.setOpaque(false);
+        this.guestButton.setContentAreaFilled(false);
+        this.guestButton.setFont(new Font("Poppins Medium", Font.BOLD, 30));
+        this.guestButton.setForeground(this.textColor);
+
+        this.signedInAsAdmin = false;
     }
 
     private void RepositionGUI(){
@@ -135,6 +143,7 @@ public class LoginState extends JFrame implements ActionListener, KeyListener {
         this.passInput.setBounds(this.passLabel.getX(), this.passLabel.getY() + 35, 300, 40);
         this.showPassword.setBounds(this.passInput.getX(), this.passInput.getY() + 50, 200, 40);
         this.submitButton.setBounds(this.showPassword.getX(), this.showPassword.getY() + 50, 300, 60);
+        this.guestButton.setBounds(this.submitButton.getX(), this.submitButton.getY() + 80, 300, 60);
     }
 
     private void AddToPanel(){
@@ -146,12 +155,18 @@ public class LoginState extends JFrame implements ActionListener, KeyListener {
         this.add(this.passInput);
         this.add(this.showPassword);
         this.add(this.submitButton);
+        this.add(this.guestButton);
     }
 
     @Override
     public void actionPerformed(ActionEvent ae) {
         if(ae.getSource() == this.submitButton){
             this.onEnterPress();
+        }
+
+        if(ae.getSource() == this.guestButton){
+            // Next State
+            this.next(Package.pkg);
         }
 
         if(ae.getSource() == this.showPassword){
@@ -183,5 +198,26 @@ public class LoginState extends JFrame implements ActionListener, KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
 
+    }
+
+    public boolean getSignedInAsAdmin(){
+        return this.signedInAsAdmin;
+    }
+
+    @Override
+    public void next(Package pkg) {
+        pkg.setState(new QueryState(this.signedInAsAdmin));
+        System.out.println("\nLoading QueryState\n");
+        this.dispose();
+    }
+
+    @Override
+    public void prev(Package pkg) {
+        System.out.println("\nAlready in root state\n");
+    }
+
+    @Override
+    public void printStatus() {
+        System.out.println("\nLogin State\n");
     }
 }
