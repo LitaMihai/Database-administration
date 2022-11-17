@@ -2,14 +2,19 @@ package misc;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DataBase {
     private Connection connection;
     private Statement statement;
     private JTable table;
-    private JFrame frame;
-    private DefaultTableModel model;
+//    private DefaultTableModel model;
+    private ArrayList<JFrame> frames;
+    private HashMap<JTable, DefaultTableModel> tables;
+
     public DataBase(){
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -21,8 +26,8 @@ public class DataBase {
             String pass = "ed308";
             this.connection = DriverManager.getConnection(dbURL, userName, pass);
             this.statement = this.connection.createStatement();
-            this.model = new DefaultTableModel();
-            this.table = new JTable(model);
+            this.tables = new HashMap<JTable, DefaultTableModel>();
+            this.frames = new ArrayList<JFrame>();
         }
         catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
@@ -43,41 +48,87 @@ public class DataBase {
             String tabela = "";
 
             // Clear the table
+            DefaultTableModel model = new DefaultTableModel();
+            JTable table = new JTable(model);
+
+            table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 15));
+            table.setFont(new Font("Poppins Medium", Font.BOLD, 15));
+            table.getTableHeader().setOpaque(false);
+            table.getTableHeader().setBackground(new Color(32, 136, 203));
+            table.getTableHeader().setForeground(new Color(255,255,255));
+            table.setRowHeight(25);
+            table.setFocusable(false);
+            table.setIntercellSpacing(new java.awt.Dimension(0, 0));
+            table.setRowHeight(25);
+            table.setSelectionBackground(new java.awt.Color(232, 57, 95));
+            table.setShowVerticalLines(false);
+            table.getTableHeader().setReorderingAllowed(false);
+            table.setPreferredScrollableViewportSize(table.getPreferredSize());
+
             model.getDataVector().removeAllElements();
             model.setColumnCount(0);
             model.fireTableDataChanged();
 
-            // Daca query ul se face pe doctori
-            model.addColumn("Nume");
-            model.addColumn("Prenume");
-            model.addColumn("Specializare");
+            tabela = getTableNameFromQuery(query);
+            switch(tabela){
+                case "Doctori":
+                    model.addColumn("Nume");
+                    model.addColumn("Prenume");
+                    model.addColumn("Specializare");
 
-            while(resultSet.next()){
-                String s1 = resultSet.getString(2);
-                String s2 = resultSet.getString(3);
-                String s3 = resultSet.getString(4);
+                    while(resultSet.next()){
+                        String s1 = resultSet.getString(2);
+                        String s2 = resultSet.getString(3);
+                        String s3 = resultSet.getString(4);
 
-                // Here we re finding the index of the blank space after the table name
-                int index = query.indexOf("FROM") + 5;
-                while(query.charAt(index) != ' ' && index < query.length() - 1){
-                    index++;
-                }
-                index++;
+                        model.addRow(new Object[]{s1, s2, s3});
+                    }
 
-                tabela = query.substring(query.indexOf("FROM") + 5, index);
-                System.out.println(tabela);
+                    break;
 
-                model.addRow(new Object[]{s1, s2, s3});
+                case "Pacienti":
+                    model.addColumn("Nume");
+                    model.addColumn("Prenume");
+                    model.addColumn("CNP");
+                    model.addColumn("Oras");
+                    model.addColumn("Data Nasterii");
+
+                    while(resultSet.next()){
+                        String s1 = resultSet.getString(4);
+                        String s2 = resultSet.getString(5);
+                        String s3 = resultSet.getString(6);
+                        String s4 = resultSet.getString(9);
+                        String s5 = resultSet.getString(12);
+
+                        model.addRow(new Object[]{s1, s2, s3, s4, s5});
+                    }
+
+                    break;
             }
-            this.frame = new JFrame();
-            this.frame.setSize(550, 350);
-            this.frame.add(new JScrollPane(table));
-            this.frame.dispose();
-            this.frame.setVisible(true);
-            this.frame.setTitle(tabela);
+
+            tables.put(new JTable(), new DefaultTableModel());
+
+            JFrame frame = new JFrame();
+            frame.setSize(750, 550);
+            frame.dispose();
+            frame.add(new JScrollPane(table));
+            frame.setVisible(true);
+            frame.setTitle(tabela);
+
+            frames.add(new JFrame());
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+    private String getTableNameFromQuery(String query){
+        // Here we re finding the index of the blank space after the table name
+        int index = query.indexOf("FROM") + 5;
+        while(query.charAt(index) != ' ' && index < query.length() - 1){
+            index++;
+        }
+        index++;
+
+        return query.substring(query.indexOf("FROM") + 5, index);
     }
 }

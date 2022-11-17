@@ -14,8 +14,5 @@ public class Main {
         catch (Exception e){
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
-
-        // db.SendQuery("SELECT * FROM Doctori");
-        //db.CloseConnection();
     }
 }

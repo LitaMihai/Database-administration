@@ -110,6 +110,7 @@ public class LoginState extends JFrame implements ActionListener, KeyListener, P
         this.showPassword.addKeyListener(this);
         this.showPassword.setText("Show Password");
         this.showPassword.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.showPassword.setFocusable(false);
         this.showPassword.setBackground(this.backgroundColor);
         this.showPassword.setForeground(this.textColor);
 
@@ -119,6 +120,7 @@ public class LoginState extends JFrame implements ActionListener, KeyListener, P
         this.submitButton.setOpaque(false);
         this.submitButton.setContentAreaFilled(false);
         this.submitButton.setFont(new Font("Poppins Medium", Font.BOLD, 30));
+        this.submitButton.setFocusable(false);
         this.submitButton.setForeground(this.textColor);
 
         this.guestButton.setText("Sign in as guest");
@@ -126,6 +128,7 @@ public class LoginState extends JFrame implements ActionListener, KeyListener, P
         this.guestButton.setOpaque(false);
         this.guestButton.setContentAreaFilled(false);
         this.guestButton.setFont(new Font("Poppins Medium", Font.BOLD, 30));
+        this.guestButton.setFocusable(false);
         this.guestButton.setForeground(this.textColor);
 
         this.signedInAsAdmin = false;
@@ -207,7 +210,6 @@ public class LoginState extends JFrame implements ActionListener, KeyListener, P
     @Override
     public void next(Package pkg) {
         pkg.setState(new QueryState(this.signedInAsAdmin));
-        System.out.println("\nLoading QueryState\n");
         this.dispose();
     }
 
