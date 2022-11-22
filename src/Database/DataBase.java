@@ -1,4 +1,4 @@
-package misc;
+package Database;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -8,12 +8,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DataBase {
-    private Connection connection;
-    private Statement statement;
-    private JTable table;
-//    private DefaultTableModel model;
-    private ArrayList<JFrame> frames;
-    private HashMap<JTable, DefaultTableModel> tables;
+    final private Connection connection;
+    final private Statement statement;
+    final private ArrayList<JFrame> frames;
+    final private HashMap<JTable, DefaultTableModel> tables;
 
     public DataBase(){
         try {
@@ -26,8 +24,8 @@ public class DataBase {
             String pass = "ed308";
             this.connection = DriverManager.getConnection(dbURL, userName, pass);
             this.statement = this.connection.createStatement();
-            this.tables = new HashMap<JTable, DefaultTableModel>();
-            this.frames = new ArrayList<JFrame>();
+            this.tables = new HashMap<>();
+            this.frames = new ArrayList<>();
         }
         catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
@@ -42,10 +40,10 @@ public class DataBase {
     }
 
     public void SendQuery(String query){
-        ResultSet resultSet = null;
+        ResultSet resultSet;
         try {
             resultSet = this.statement.executeQuery(query);
-            String tabela = "";
+            String tabela;
 
             // Clear the table
             DefaultTableModel model = new DefaultTableModel();
@@ -70,30 +68,26 @@ public class DataBase {
             model.fireTableDataChanged();
 
             tabela = getTableNameFromQuery(query);
-            switch(tabela){
-                case "Doctori":
+            switch (tabela) {
+                case "Doctori" -> {
                     model.addColumn("Nume");
                     model.addColumn("Prenume");
                     model.addColumn("Specializare");
-
-                    while(resultSet.next()){
+                    while (resultSet.next()) {
                         String s1 = resultSet.getString(2);
                         String s2 = resultSet.getString(3);
                         String s3 = resultSet.getString(4);
 
                         model.addRow(new Object[]{s1, s2, s3});
                     }
-
-                    break;
-
-                case "Pacienti":
+                }
+                case "Pacienti" -> {
                     model.addColumn("Nume");
                     model.addColumn("Prenume");
                     model.addColumn("CNP");
                     model.addColumn("Oras");
                     model.addColumn("Data Nasterii");
-
-                    while(resultSet.next()){
+                    while (resultSet.next()) {
                         String s1 = resultSet.getString(4);
                         String s2 = resultSet.getString(5);
                         String s3 = resultSet.getString(6);
@@ -102,8 +96,7 @@ public class DataBase {
 
                         model.addRow(new Object[]{s1, s2, s3, s4, s5});
                     }
-
-                    break;
+                }
             }
 
             tables.put(new JTable(), new DefaultTableModel());

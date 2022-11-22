@@ -2,33 +2,22 @@ package stateDesign;
 
 import states.LoginState;
 
+import javax.swing.*;
+
 public class Package {
     private PackageState state;
     static public Package pkg;
 
-    public Package(){
-        this.state = new LoginState();
-    }
-
-    public void previousState() {
-        state.prev(this);
-    }
-
-    public void nextState() {
-        state.next(this);
-    }
-
-    public void printStatus() {
-        state.printStatus();
+    public Package(JFrame frame){
+        this.state = new LoginState(frame);
+        this.state.printStatus();
     }
 
     public void setState(PackageState state) {
         this.state = state;
     }
     public void setPackage(Package pkg){
-        this.pkg = pkg;
-    }
-    public Package getPackage(){
-        return this.pkg;
+        if(pkg != null)
+            Package.pkg = pkg;
     }
 }

@@ -7,21 +7,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class LoginState extends JFrame implements ActionListener, KeyListener, PackageState {
-    JButton submitButton;
-    JButton guestButton;
-    JLabel userLabel, passLabel, messageLabel, loginLabel;
-    final JTextField  userInput;
-    final JPasswordField passInput;
-    JCheckBox showPassword;
+public class LoginState implements ActionListener, KeyListener, PackageState {
+    final private JButton submitButton;
+    final private JButton guestButton;
+    final private JLabel userLabel, passLabel, messageLabel, loginLabel;
+    final private JTextField  userInput;
+    final private  JPasswordField passInput;
+    final private JCheckBox showPassword;
+    final private JFrame frame;
     final private Color backgroundColor = new Color(0, 10, 20);
     final private Color textColor = new Color(237, 242, 244);
     final private Color errorColor = new Color(200, 8, 21);
     final private Color inputColor = new Color(0, 150, 170);
 
-    private boolean signedInAsAdmin;
+    public LoginState(JFrame frame){
+        this.frame = frame;
+        this.frame.getContentPane().removeAll();
+        this.frame.repaint();
 
-    public LoginState(){
         this.loginLabel = new JLabel();
         this.messageLabel = new JLabel();
         this.userInput = new JTextField();
@@ -32,11 +35,10 @@ public class LoginState extends JFrame implements ActionListener, KeyListener, P
         this.submitButton =  new JButton();
         this.guestButton = new JButton();
 
-        InitFrame();
         InitVariables();
         AddToPanel();
 
-        this.addComponentListener(new ComponentAdapter() {
+        frame.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 RepositionGUI();
@@ -49,8 +51,6 @@ public class LoginState extends JFrame implements ActionListener, KeyListener, P
         String passValue = String.valueOf(this.passInput.getPassword());
 
         if(userValue.equals("sa") && passValue.equals("ed308")){
-            this.signedInAsAdmin = true;
-
             // Next State
             this.next(Package.pkg);
         }
@@ -63,19 +63,10 @@ public class LoginState extends JFrame implements ActionListener, KeyListener, P
         }
     }
 
-    private void InitFrame(){
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(800, 600);
-        this.setTitle("Login");
-        this.setLocationRelativeTo(null);
-        this.setLayout(null);
-        this.setVisible(true);
-    }
-
     private void InitVariables() {
         RepositionGUI();
 
-        this.getContentPane().setBackground(this.backgroundColor);
+        this.frame.getContentPane().setBackground(this.backgroundColor);
 
         this.loginLabel.setText("Login");
         this.loginLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -130,16 +121,14 @@ public class LoginState extends JFrame implements ActionListener, KeyListener, P
         this.guestButton.setFont(new Font("Poppins Medium", Font.BOLD, 30));
         this.guestButton.setFocusable(false);
         this.guestButton.setForeground(this.textColor);
-
-        this.signedInAsAdmin = false;
     }
 
     private void RepositionGUI(){
 
-        this.loginLabel.setBounds(this.getWidth() / 2 - 160, this.getHeight() / 2 - 280, 300, 100);
+        this.loginLabel.setBounds(this.frame.getWidth() / 2 - 160, this.frame.getHeight() / 2 - 280, 300, 100);
         this.messageLabel.setBounds(this.loginLabel.getX() + 45, this.loginLabel.getY() + 80, 450, 40);
-        this.userLabel.setBounds(this.getWidth() / 2 - 150,
-                this.getHeight() / 2 - (20 + 20 + 20 + 20 + 20 + 20),
+        this.userLabel.setBounds(this.frame.getWidth() / 2 - 150,
+                this.frame.getHeight() / 2 - (20 + 20 + 20 + 20 + 20 + 20),
                 100 ,40);
         this.userInput.setBounds(this.userLabel.getX(), this.userLabel.getY() + 35, 300, 40);
         this.passLabel.setBounds(this.userInput.getX(), this.userInput.getY() + 35, 100, 40);
@@ -150,15 +139,15 @@ public class LoginState extends JFrame implements ActionListener, KeyListener, P
     }
 
     private void AddToPanel(){
-        this.add(this.loginLabel);
-        this.add(this.messageLabel);
-        this.add(this.userLabel);
-        this.add(this.userInput);
-        this.add(this.passLabel);
-        this.add(this.passInput);
-        this.add(this.showPassword);
-        this.add(this.submitButton);
-        this.add(this.guestButton);
+        this.frame.add(this.loginLabel);
+        this.frame.add(this.messageLabel);
+        this.frame.add(this.userLabel);
+        this.frame.add(this.userInput);
+        this.frame.add(this.passLabel);
+        this.frame.add(this.passInput);
+        this.frame.add(this.showPassword);
+        this.frame.add(this.submitButton);
+        this.frame.add(this.guestButton);
     }
 
     @Override
@@ -167,12 +156,12 @@ public class LoginState extends JFrame implements ActionListener, KeyListener, P
             this.onEnterPress();
         }
 
-        if(ae.getSource() == this.guestButton){
+        else if(ae.getSource() == this.guestButton){
             // Next State
             this.next(Package.pkg);
         }
 
-        if(ae.getSource() == this.showPassword){
+        else if(ae.getSource() == this.showPassword){
             if(this.showPassword.isSelected()){
                 this.passInput.setEchoChar((char) 0);
             }
@@ -203,14 +192,9 @@ public class LoginState extends JFrame implements ActionListener, KeyListener, P
 
     }
 
-    public boolean getSignedInAsAdmin(){
-        return this.signedInAsAdmin;
-    }
-
     @Override
     public void next(Package pkg) {
-        pkg.setState(new QueryState(this.signedInAsAdmin));
-        this.dispose();
+        pkg.setState(new MenuState(this.frame));
     }
 
     @Override
