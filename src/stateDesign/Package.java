@@ -1,5 +1,6 @@
 package stateDesign;
 
+import states.InsertState;
 import states.LoginState;
 
 import javax.swing.*;

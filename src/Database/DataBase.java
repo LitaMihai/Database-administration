@@ -39,6 +39,18 @@ public class DataBase {
         }
     }
 
+    public int sendInsert(String query){
+        int done;
+        try{
+            done = this.statement.executeUpdate(query);
+            return done;
+        }
+        catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+
     public void SendQuery(String query){
         ResultSet resultSet;
         try {

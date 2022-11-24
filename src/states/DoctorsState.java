@@ -157,13 +157,16 @@ public class DoctorsState implements PackageState, ActionListener {
         if(e.getSource() == this.viewButton)
             dataBase.SendQuery("SELECT * FROM Doctori");
 
+        if(e.getSource() == this.insertButton)
+            this.next(Package.pkg);
+
         else if(e.getSource() == this.backButton)
             this.prev(Package.pkg);
     }
 
     @Override
     public void next(Package pkg) {
-        System.out.println("Nothing for the moment");
+        pkg.setState(new InsertState(this.frame, "Doctors", this.dataBase));
     }
 
     @Override
