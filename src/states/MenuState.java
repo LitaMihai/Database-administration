@@ -169,7 +169,7 @@ public class MenuState implements PackageState, ActionListener {
                 pkg.setState(new DoctorsState(this.frame, this.dataBase));
                 break;
             case 1:
-                // pkg.setState(new PillsState(this.frame, this.dataBase));
+                pkg.setState(new PillsState(this.frame, this.dataBase));
                 break;
             case 2:
                 // pkg.setState(new PatientsState(this.frame, this.dataBase));
@@ -193,6 +193,4 @@ public class MenuState implements PackageState, ActionListener {
     public void printStatus() {
         System.out.println("Query State");
     }
-
-
 }

@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class InsertState implements PackageState, ActionListener {
 
@@ -25,6 +27,9 @@ public class InsertState implements PackageState, ActionListener {
     final private JLabel title, doctorsNameLabel, doctorsSurnameLabel, doctorsSpecialityLabel;
     final private JTextField doctorsNameInput, doctorsSurnameInput, doctorsSpecialityInput;
 
+    // Pills
+    final private JLabel pillsNameLabel, pillsDiseaseTreatedLabel, pillsSideEffectsLabel;
+    final private JTextField pillsNameInput, pillsDiseaseTreatedInput, pillsSideEffectsInput;
 
     public InsertState(JFrame frame, String sqlTable, DataBase dataBase){
         this.frame = frame;
@@ -47,6 +52,13 @@ public class InsertState implements PackageState, ActionListener {
         this.doctorsSurnameInput = new JTextField();
         this.doctorsSpecialityInput = new JTextField();
 
+        // Pills
+        this.pillsNameLabel = new JLabel();
+        this.pillsDiseaseTreatedLabel = new JLabel();
+        this.pillsSideEffectsLabel = new JLabel();
+        this.pillsNameInput = new JTextField();
+        this.pillsDiseaseTreatedInput = new JTextField();
+        this.pillsSideEffectsInput = new JTextField();
 
         InitVariables();
         AddToPanel();
@@ -117,6 +129,34 @@ public class InsertState implements PackageState, ActionListener {
         this.doctorsSpecialityInput.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
         this.doctorsSpecialityInput.setBackground(this.inputColor);
         this.doctorsSpecialityInput.setForeground(this.textColor);
+
+        // Pills
+        this.pillsNameLabel.setText("Denumire");
+        this.pillsNameLabel.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.pillsNameLabel.setForeground(this.textColor);
+
+        this.pillsNameInput.setBorder(null);
+        this.pillsNameInput.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.pillsNameInput.setBackground(this.inputColor);
+        this.pillsNameInput.setForeground(this.textColor);
+
+        this.pillsDiseaseTreatedLabel.setText("Boala Tratata");
+        this.pillsDiseaseTreatedLabel.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.pillsDiseaseTreatedLabel.setForeground(this.textColor);
+
+        this.pillsDiseaseTreatedInput.setBorder(null);
+        this.pillsDiseaseTreatedInput.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.pillsDiseaseTreatedInput.setBackground(this.inputColor);
+        this.pillsDiseaseTreatedInput.setForeground(this.textColor);
+
+        this.pillsSideEffectsLabel.setText("Reactii Adverse Posibile");
+        this.pillsSideEffectsLabel.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.pillsSideEffectsLabel.setForeground(this.textColor);
+
+        this.pillsSideEffectsInput.setBorder(null);
+        this.pillsSideEffectsInput.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.pillsSideEffectsInput.setBackground(this.inputColor);
+        this.pillsSideEffectsInput.setForeground(this.textColor);
     }
 
     private void RepositionGUI(){
@@ -132,6 +172,16 @@ public class InsertState implements PackageState, ActionListener {
                 this.doctorsSpecialityInput.setBounds(this.doctorsSpecialityLabel.getX() + 200, this.doctorsSpecialityLabel.getY(), 295, 30);
                 this.sendButton.setBounds(this.doctorsSpecialityLabel.getX(), this.doctorsSpecialityLabel.getY() + 150, 170, 30);
                 this.backButton.setBounds(this.sendButton.getX() + 326, this.sendButton.getY(), 170, 30);
+                break;
+            case "Pills":
+                this.pillsNameLabel.setBounds(this.title.getX() - 150, this.title.getY() + 130, 250, 30);
+                this.pillsNameInput.setBounds(this.pillsNameLabel.getX() + 230, this.pillsNameLabel.getY(), 295, 30);
+                this.pillsDiseaseTreatedLabel.setBounds(this.pillsNameLabel.getX(), this.pillsNameLabel.getY() + 57, 250, 30);
+                this.pillsDiseaseTreatedInput.setBounds(this.pillsDiseaseTreatedLabel.getX() + 230, this.pillsDiseaseTreatedLabel.getY(), 295, 30);
+                this.pillsSideEffectsLabel.setBounds(this.pillsDiseaseTreatedLabel.getX(), this.pillsDiseaseTreatedLabel.getY() + 57, 250, 30);
+                this.pillsSideEffectsInput.setBounds(this.pillsSideEffectsLabel.getX() + 230, this.pillsSideEffectsLabel.getY(), 295, 30);
+                this.sendButton.setBounds(this.pillsSideEffectsLabel.getX(), this.pillsSideEffectsLabel.getY() + 150, 170, 30);
+                this.backButton.setBounds(this.sendButton.getX() + 356, this.sendButton.getY(), 170, 30);
                 break;
         }
     }
@@ -150,6 +200,14 @@ public class InsertState implements PackageState, ActionListener {
                 this.frame.add(this.doctorsSpecialityLabel);
                 this.frame.add(this.doctorsSpecialityInput);
                 break;
+            case "Pills":
+                this.frame.add(this.pillsNameLabel);
+                this.frame.add(this.pillsNameInput);
+                this.frame.add(this.pillsDiseaseTreatedLabel);
+                this.frame.add(this.pillsDiseaseTreatedInput);
+                this.frame.add(this.pillsSideEffectsLabel);
+                this.frame.add(this.pillsSideEffectsInput);
+                break;
         }
     }
 
@@ -159,17 +217,54 @@ public class InsertState implements PackageState, ActionListener {
                 && !this.doctorsSpecialityInput.getText().equals("");
     }
 
+    private boolean areEmptyPillsButtons(){
+        return !this.pillsNameInput.getText().equals("")
+                && !this.pillsDiseaseTreatedInput.getText().equals("")
+                && !this.pillsSideEffectsInput.getText().equals("");
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == this.sendButton && areEmptyDoctorsButtons()){
-            int done = this.dataBase.sendInsert("INSERT INTO Doctori VALUES('" +
-                    this.doctorsNameInput.getText() + "', '" +
-                    this.doctorsSurnameInput.getText() + "', '" +
-                    this.doctorsSpecialityInput.getText() + "');");
+        if(e.getSource() == this.sendButton ){
+            switch (this.sqlTable){
+                case "Doctors":
+                    if(areEmptyDoctorsButtons()){
+                        int done = this.dataBase.sendInsert("INSERT INTO Doctori VALUES('" +
+                                this.doctorsNameInput.getText() + "', '" +
+                                this.doctorsSurnameInput.getText() + "', '" +
+                                this.doctorsSpecialityInput.getText() + "');");
 
-            if(done == 1)
-                this.dataBase.SendQuery("SELECT * FROM Doctori");
-            this.prev(Package.pkg);
+                        if(done == 1)
+                            this.dataBase.SendQuery("SELECT * FROM Doctori");
+                        this.prev(Package.pkg);
+                    }
+                    break;
+
+                case "Pills":
+                    if(areEmptyPillsButtons()){
+                        int s1 = -1;
+                        ResultSet resultSet;
+                        try {
+                            resultSet = this.dataBase.getStatement().executeQuery("SELECT BoalaID FROM Boli WHERE Nume = '" + this.pillsDiseaseTreatedInput.getText() + "'");
+                            while (resultSet.next()) {
+                                s1 = resultSet.getInt(1);
+                            }
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        if(s1 != -1){
+                            int done = this.dataBase.sendInsert("INSERT INTO Medicamente VALUES(" +
+                                    Integer.toString(s1) + ", '" +
+                                    this.pillsNameInput.getText() + "', '" +
+                                    this.pillsSideEffectsInput.getText() + "');");
+                            if(done == 1)
+                                this.dataBase.SendQuery("SELECT Medicamente.Denumire, Boli.Nume AS 'Boala Tratata', Medicamente.ReactiiAdversePosibile " +
+                                        "FROM Medicamente INNER JOIN Boli ON Medicamente.BoalaID = Boli.BoalaID");
+                            this.prev(Package.pkg);
+                        }
+                    }
+                    break;
+            }
         }
 
         else if(e.getSource() == this.backButton){
@@ -187,6 +282,9 @@ public class InsertState implements PackageState, ActionListener {
         switch (this.sqlTable){
             case "Doctors":
                 pkg.setState(new DoctorsState(this.frame, this.dataBase));
+                break;
+            case "Pills":
+                pkg.setState(new PillsState(this.frame, this.dataBase));
                 break;
         }
     }

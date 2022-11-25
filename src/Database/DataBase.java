@@ -50,6 +50,9 @@ public class DataBase {
         }
     }
 
+    public Statement getStatement(){
+        return this.statement;
+    }
 
     public void SendQuery(String query){
         ResultSet resultSet;
@@ -80,6 +83,7 @@ public class DataBase {
             model.fireTableDataChanged();
 
             tabela = getTableNameFromQuery(query);
+            // System.out.println(tabela);
             switch (tabela) {
                 case "Doctori" -> {
                     model.addColumn("Nume");
@@ -107,6 +111,18 @@ public class DataBase {
                         String s5 = resultSet.getString(12);
 
                         model.addRow(new Object[]{s1, s2, s3, s4, s5});
+                    }
+                }
+                case "Medicamente " -> {
+                    model.addColumn("Denumire Medicament");
+                    model.addColumn("Boala Tratata");
+                    model.addColumn("Reactii Adverse Posibile");
+                    while (resultSet.next()) {
+                        String s1 = resultSet.getString(1);
+                        String s2 = resultSet.getString(2);
+                        String s3 = resultSet.getString(3);
+
+                        model.addRow(new Object[]{s1, s2, s3});
                     }
                 }
             }
