@@ -31,6 +31,10 @@ public class InsertState implements PackageState, ActionListener {
     final private JLabel pillsNameLabel, pillsDiseaseTreatedLabel, pillsSideEffectsLabel;
     final private JTextField pillsNameInput, pillsDiseaseTreatedInput, pillsSideEffectsInput;
 
+    // Diseases
+    final private JLabel diseasesNameLabel;
+    final private JTextField diseasesNameInput;
+
     public InsertState(JFrame frame, String sqlTable, DataBase dataBase){
         this.frame = frame;
         this.sqlTable = sqlTable;
@@ -43,8 +47,9 @@ public class InsertState implements PackageState, ActionListener {
         this.frame.repaint();
         this.frame.setTitle(sqlTable);
 
-        // Doctors
         this.title = new JLabel();
+
+        // Doctors
         this.doctorsNameLabel = new JLabel();
         this.doctorsSurnameLabel = new JLabel();
         this.doctorsSpecialityLabel = new JLabel();
@@ -59,6 +64,10 @@ public class InsertState implements PackageState, ActionListener {
         this.pillsNameInput = new JTextField();
         this.pillsDiseaseTreatedInput = new JTextField();
         this.pillsSideEffectsInput = new JTextField();
+
+        // Diseases
+        this.diseasesNameLabel = new JLabel();
+        this.diseasesNameInput = new JTextField();
 
         InitVariables();
         AddToPanel();
@@ -157,13 +166,23 @@ public class InsertState implements PackageState, ActionListener {
         this.pillsSideEffectsInput.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
         this.pillsSideEffectsInput.setBackground(this.inputColor);
         this.pillsSideEffectsInput.setForeground(this.textColor);
+
+        // Diseases
+        this.diseasesNameLabel.setText("Nume");
+        this.diseasesNameLabel.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.diseasesNameLabel.setForeground(this.textColor);
+
+        this.diseasesNameInput.setBorder(null);
+        this.diseasesNameInput.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.diseasesNameInput.setBackground(this.inputColor);
+        this.diseasesNameInput.setForeground(this.textColor);
     }
 
     private void RepositionGUI(){
         this.title.setBounds(this.frame.getWidth() / 2 - (243 / 2), this.frame.getHeight() / 2 - (230), 243, 30);
 
-        switch(this.sqlTable){
-            case "Doctors":
+        switch (this.sqlTable) {
+            case "Doctors" -> {
                 this.doctorsNameLabel.setBounds(this.title.getX() - 130, this.title.getY() + 130, 200, 30);
                 this.doctorsNameInput.setBounds(this.doctorsNameLabel.getX() + 200, this.doctorsNameLabel.getY(), 295, 30);
                 this.doctorsSurnameLabel.setBounds(this.doctorsNameLabel.getX(), this.doctorsNameLabel.getY() + 57, 200, 30);
@@ -172,8 +191,8 @@ public class InsertState implements PackageState, ActionListener {
                 this.doctorsSpecialityInput.setBounds(this.doctorsSpecialityLabel.getX() + 200, this.doctorsSpecialityLabel.getY(), 295, 30);
                 this.sendButton.setBounds(this.doctorsSpecialityLabel.getX(), this.doctorsSpecialityLabel.getY() + 150, 170, 30);
                 this.backButton.setBounds(this.sendButton.getX() + 326, this.sendButton.getY(), 170, 30);
-                break;
-            case "Pills":
+            }
+            case "Pills" -> {
                 this.pillsNameLabel.setBounds(this.title.getX() - 150, this.title.getY() + 130, 250, 30);
                 this.pillsNameInput.setBounds(this.pillsNameLabel.getX() + 230, this.pillsNameLabel.getY(), 295, 30);
                 this.pillsDiseaseTreatedLabel.setBounds(this.pillsNameLabel.getX(), this.pillsNameLabel.getY() + 57, 250, 30);
@@ -182,7 +201,13 @@ public class InsertState implements PackageState, ActionListener {
                 this.pillsSideEffectsInput.setBounds(this.pillsSideEffectsLabel.getX() + 230, this.pillsSideEffectsLabel.getY(), 295, 30);
                 this.sendButton.setBounds(this.pillsSideEffectsLabel.getX(), this.pillsSideEffectsLabel.getY() + 150, 170, 30);
                 this.backButton.setBounds(this.sendButton.getX() + 356, this.sendButton.getY(), 170, 30);
-                break;
+            }
+            case "Diseases" -> {
+                this.diseasesNameLabel.setBounds(this.title.getX() - 150, this.title.getY() + 160, 250, 30);
+                this.diseasesNameInput.setBounds(this.diseasesNameLabel.getX() + 230, this.diseasesNameLabel.getY(), 295, 30);
+                this.sendButton.setBounds(this.diseasesNameLabel.getX(), this.diseasesNameLabel.getY() + 250, 170, 30);
+                this.backButton.setBounds(this.sendButton.getX() + 356, this.sendButton.getY(), 170, 30);
+            }
         }
     }
 
@@ -191,23 +216,27 @@ public class InsertState implements PackageState, ActionListener {
         this.frame.add(this.sendButton);
         this.frame.add(this.backButton);
 
-        switch(this.sqlTable){
-            case "Doctors":
+        switch (this.sqlTable) {
+            case "Doctors" -> {
                 this.frame.add(this.doctorsNameLabel);
                 this.frame.add(this.doctorsNameInput);
                 this.frame.add(this.doctorsSurnameLabel);
                 this.frame.add(this.doctorsSurnameInput);
                 this.frame.add(this.doctorsSpecialityLabel);
                 this.frame.add(this.doctorsSpecialityInput);
-                break;
-            case "Pills":
+            }
+            case "Pills" -> {
                 this.frame.add(this.pillsNameLabel);
                 this.frame.add(this.pillsNameInput);
                 this.frame.add(this.pillsDiseaseTreatedLabel);
                 this.frame.add(this.pillsDiseaseTreatedInput);
                 this.frame.add(this.pillsSideEffectsLabel);
                 this.frame.add(this.pillsSideEffectsInput);
-                break;
+            }
+            case "Diseases" -> {
+                this.frame.add(this.diseasesNameLabel);
+                this.frame.add(this.diseasesNameInput);
+            }
         }
     }
 
@@ -221,6 +250,10 @@ public class InsertState implements PackageState, ActionListener {
         return !this.pillsNameInput.getText().equals("")
                 && !this.pillsDiseaseTreatedInput.getText().equals("")
                 && !this.pillsSideEffectsInput.getText().equals("");
+    }
+
+    private boolean areEmptyDiseasesButtons(){
+        return !this.diseasesNameInput.getText().equals("");
     }
 
     @Override
@@ -264,6 +297,16 @@ public class InsertState implements PackageState, ActionListener {
                         }
                     }
                     break;
+
+                case "Diseases":
+                    if(areEmptyDiseasesButtons()){
+                        int done = this.dataBase.sendInsert("INSERT INTO Boli VALUES('" +
+                                this.diseasesNameInput.getText() + "')");
+
+                        if(done == 1)
+                            this.dataBase.SendQuery("SELECT * FROM Boli");
+                        this.prev(Package.pkg);
+                    }
             }
         }
 
@@ -279,13 +322,10 @@ public class InsertState implements PackageState, ActionListener {
 
     @Override
     public void prev(Package pkg) {
-        switch (this.sqlTable){
-            case "Doctors":
-                pkg.setState(new DoctorsState(this.frame, this.dataBase));
-                break;
-            case "Pills":
-                pkg.setState(new PillsState(this.frame, this.dataBase));
-                break;
+        switch (this.sqlTable) {
+            case "Doctors" -> pkg.setState(new DoctorsState(this.frame, this.dataBase));
+            case "Pills" -> pkg.setState(new PillsState(this.frame, this.dataBase));
+            case "Diseases" -> pkg.setState(new DiseasesState(this.frame, this.dataBase));
         }
     }
 

@@ -42,6 +42,7 @@ public class DataBase {
     public int sendInsert(String query){
         int done;
         try{
+            System.out.println(query);
             done = this.statement.executeUpdate(query);
             return done;
         }
@@ -97,6 +98,18 @@ public class DataBase {
                         model.addRow(new Object[]{s1, s2, s3});
                     }
                 }
+                case "Medicamente " -> {
+                    model.addColumn("Denumire Medicament");
+                    model.addColumn("Boala Tratata");
+                    model.addColumn("Reactii Adverse Posibile");
+                    while (resultSet.next()) {
+                        String s1 = resultSet.getString(1);
+                        String s2 = resultSet.getString(2);
+                        String s3 = resultSet.getString(3);
+
+                        model.addRow(new Object[]{s1, s2, s3});
+                    }
+                }
                 case "Pacienti" -> {
                     model.addColumn("Nume");
                     model.addColumn("Prenume");
@@ -113,16 +126,13 @@ public class DataBase {
                         model.addRow(new Object[]{s1, s2, s3, s4, s5});
                     }
                 }
-                case "Medicamente " -> {
-                    model.addColumn("Denumire Medicament");
-                    model.addColumn("Boala Tratata");
-                    model.addColumn("Reactii Adverse Posibile");
+                //case "CaseSanatate" -> {}
+                case "Boli" -> {
+                    model.addColumn("Nume");
                     while (resultSet.next()) {
-                        String s1 = resultSet.getString(1);
-                        String s2 = resultSet.getString(2);
-                        String s3 = resultSet.getString(3);
+                        String s1 = resultSet.getString(2);
 
-                        model.addRow(new Object[]{s1, s2, s3});
+                        model.addRow(new Object[]{s1});
                     }
                 }
             }

@@ -44,6 +44,7 @@ public class LoginState implements ActionListener, KeyListener, PackageState {
                 RepositionGUI();
             }
         });
+        this.frame.repaint(); // this line resolves a bug: when you start the app, buttons and text will be painted only if you hover with cursor
     }
 
     private void onEnterPress(){
