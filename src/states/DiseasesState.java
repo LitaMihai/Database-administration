@@ -58,7 +58,7 @@ public class DiseasesState implements PackageState, ActionListener {
         this.title.setForeground(this.textColor);
         this.title.setHorizontalAlignment(SwingConstants.CENTER);
 
-        this.query1Text.setText("<html><center>" + "Bolile care au infectat cel putin 8 pacienti" + "</center></html>");
+        this.query1Text.setText("<html><center>" + "Bolile care au infectat cel putin 3 pacienti" + "</center></html>");
         this.query1Text.setFont(new Font("Poppins Medium", Font.BOLD, 20));
         this.query1Text.setForeground(this.textColor);
         this.query1Text.setHorizontalAlignment(SwingConstants.CENTER);
@@ -125,9 +125,18 @@ public class DiseasesState implements PackageState, ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == this.viewButton)
-            dataBase.SendQuery("SELECT * FROM Boli");
+            dataBase.SendQuery("SELECT * FROM Boli", false, false);
 
-        if(e.getSource() == this.insertButton)
+        else if(e.getSource() == this.query1Button)
+            dataBase.SendQuery(
+                    "SELECT Boli.Nume, COUNT(Pacienti.MedicamentID) AS NrPacienti\n" +
+                    "FROM Boli INNER JOIN Medicamente ON Boli.BoalaID = Medicamente.BoalaID INNER JOIN Pacienti ON Pacienti.MedicamentID = Medicamente.MedicamentID\n" +
+                    "GROUP BY Boli.Nume\n" +
+                    "HAVING COUNT(Pacienti.MedicamentID) >= 3",
+                    true, true
+            );
+
+        else if(e.getSource() == this.insertButton)
             this.next(Package.pkg);
 
         else if(e.getSource() == this.backButton)

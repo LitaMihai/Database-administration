@@ -135,9 +135,17 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == this.viewButton)
-            dataBase.SendQuery("SELECT * FROM CaseDeSanatate");
+            dataBase.SendQuery("SELECT * FROM CaseDeSanatate", false, false);
 
-        if(e.getSource() == this.insertButton)
+        else if(e.getSource() == this.query1Button)
+            dataBase.SendQuery(
+                    "SELECT CaseDeSanatate.Nume, COUNT(Pacienti.CasaDeSanatateID) AS NrAsigurati\n" +
+                            "FROM CaseDeSanatate INNER JOIN Pacienti ON CaseDeSanatate.CasaDeSanatateID = Pacienti.CasaDeSanatateID\n" +
+                            "GROUP BY CaseDeSanatate.Nume\n" +
+                            "HAVING COUNT(Pacienti.CasaDeSanatateID) > 3", true, true
+            );
+
+        else if(e.getSource() == this.insertButton)
             this.next(Package.pkg);
 
         else if(e.getSource() == this.backButton)

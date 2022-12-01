@@ -55,7 +55,7 @@ public class DataBase {
         return this.statement;
     }
 
-    public void SendQuery(String query){
+    public void SendQuery(String query, boolean isAdditionalQuery, boolean isFirstAdditionalQuery){
         ResultSet resultSet;
         try {
             resultSet = this.statement.executeQuery(query);
@@ -85,77 +85,179 @@ public class DataBase {
 
             tabela = getTableNameFromQuery(query);
             // System.out.println(tabela);
-            switch (tabela) {
-                case "Doctori" -> {
-                    model.addColumn("Nume");
-                    model.addColumn("Prenume");
-                    model.addColumn("Specializare");
-                    while (resultSet.next()) {
-                        String s1 = resultSet.getString(2);
-                        String s2 = resultSet.getString(3);
-                        String s3 = resultSet.getString(4);
+            if(!isAdditionalQuery){
+                switch (tabela) {
+                    case "Doctori" -> {
+                        model.addColumn("Nume");
+                        model.addColumn("Prenume");
+                        model.addColumn("Specializare");
+                        while (resultSet.next()) {
+                            String s1 = resultSet.getString(2);
+                            String s2 = resultSet.getString(3);
+                            String s3 = resultSet.getString(4);
 
-                        model.addRow(new Object[]{s1, s2, s3});
+                            model.addRow(new Object[]{s1, s2, s3});
+                        }
+                    }
+
+                    case "Medicamente " -> {
+                        model.addColumn("Denumire Medicament");
+                        model.addColumn("Boala Tratata");
+                        model.addColumn("Reactii Adverse Posibile");
+                        while (resultSet.next()) {
+                            String s1 = resultSet.getString(1);
+                            String s2 = resultSet.getString(2);
+                            String s3 = resultSet.getString(3);
+
+                            model.addRow(new Object[]{s1, s2, s3});
+                        }
+                    }
+
+                    case "Pacienti " -> {
+                        model.addColumn("Nume");
+                        model.addColumn("Prenume");
+                        model.addColumn("CNP");
+                        model.addColumn("Strada");
+                        model.addColumn("Nr");
+                        model.addColumn("Oras");
+                        model.addColumn("Judet");
+                        model.addColumn("Sex");
+                        model.addColumn("Data Nasterii");
+                        model.addColumn("Casa Sanatate");
+                        model.addColumn("Medicament Testat");
+                        while (resultSet.next()) {
+                            String s1 = resultSet.getString(1);
+                            String s2 = resultSet.getString(2);
+                            String s3 = resultSet.getString(3);
+                            String s4 = resultSet.getString(4);
+                            String s5 = resultSet.getString(5);
+                            String s6 = resultSet.getString(6);
+                            String s7 = resultSet.getString(7);
+                            String s8 = resultSet.getString(8);
+                            String s9 = resultSet.getString(9);
+                            String s10 = resultSet.getString(10);
+                            String s11 = resultSet.getString(11);
+
+                            model.addRow(new Object[]{s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11});
+                        }
+                    }
+
+                    case "CaseDeSanatate" -> {
+                        model.addColumn("Nume");
+                        while (resultSet.next()) {
+                            String s1 = resultSet.getString(2);
+
+                            model.addRow(new Object[]{s1});
+                        }
+                    }
+
+                    case "Boli" -> {
+                        model.addColumn("Nume");
+                        while (resultSet.next()) {
+                            String s1 = resultSet.getString(2);
+
+                            model.addRow(new Object[]{s1});
+                        }
                     }
                 }
+            }
+            else{
+                switch (tabela) {
+                    case "Doctori " -> {
+                        if(isFirstAdditionalQuery){
+                            model.addColumn("Nume");
+                            model.addColumn("Prenume");
+                            model.addColumn("Specializare");
+                            model.addColumn("NrPacienti");
+                            while (resultSet.next()) {
+                                String s1 = resultSet.getString(1);
+                                String s2 = resultSet.getString(2);
+                                String s3 = resultSet.getString(3);
+                                String s4 = resultSet.getString(4);
 
-                case "Medicamente " -> {
-                    model.addColumn("Denumire Medicament");
-                    model.addColumn("Boala Tratata");
-                    model.addColumn("Reactii Adverse Posibile");
-                    while (resultSet.next()) {
-                        String s1 = resultSet.getString(1);
-                        String s2 = resultSet.getString(2);
-                        String s3 = resultSet.getString(3);
+                                model.addRow(new Object[]{s1, s2, s3, s4});
+                            }
+                        }
+                        else{
+                            model.addColumn("Nume");
+                            model.addColumn("Prenume");
+                            model.addColumn("Specializare");
 
-                        model.addRow(new Object[]{s1, s2, s3});
+                            while (resultSet.next()) {
+                                String s1 = resultSet.getString(1);
+                                String s2 = resultSet.getString(2);
+                                String s3 = resultSet.getString(3);
+
+                                model.addRow(new Object[]{s1, s2, s3});
+                            }
+                        }
                     }
-                }
 
-                case "Pacienti " -> {
-                    model.addColumn("Nume");
-                    model.addColumn("Prenume");
-                    model.addColumn("CNP");
-                    model.addColumn("Strada");
-                    model.addColumn("Nr");
-                    model.addColumn("Oras");
-                    model.addColumn("Judet");
-                    model.addColumn("Sex");
-                    model.addColumn("Data Nasterii");
-                    model.addColumn("Casa Sanatate");
-                    model.addColumn("Medicament Testat");
-                    while (resultSet.next()) {
-                        String s1 = resultSet.getString(1);
-                        String s2 = resultSet.getString(2);
-                        String s3 = resultSet.getString(3);
-                        String s4 = resultSet.getString(4);
-                        String s5 = resultSet.getString(5);
-                        String s6 = resultSet.getString(6);
-                        String s7 = resultSet.getString(7);
-                        String s8 = resultSet.getString(8);
-                        String s9 = resultSet.getString(9);
-                        String s10 = resultSet.getString(10);
-                        String s11 = resultSet.getString(11);
+                    case "Medicamente " -> {
+                        model.addColumn("Denumire Medicament");
+                        model.addColumn("Reactii Adverse Posibile");
 
-                        model.addRow(new Object[]{s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11});
+                        while (resultSet.next()) {
+                            String s1 = resultSet.getString(1);
+                            String s2 = resultSet.getString(2);
+
+                            model.addRow(new Object[]{s1, s2});
+                        }
                     }
-                }
 
-                case "CaseDeSanatate" -> {
-                    model.addColumn("Nume");
-                    while (resultSet.next()) {
-                        String s1 = resultSet.getString(2);
+                    case "Pacienti " -> {
+                        if(isFirstAdditionalQuery){
+                            model.addColumn("Nume");
+                            model.addColumn("Prenume");
+                            model.addColumn("CNP");
+                            model.addColumn("Casa Sanatate");
 
-                        model.addRow(new Object[]{s1});
+                            while (resultSet.next()) {
+                                String s1 = resultSet.getString(1);
+                                String s2 = resultSet.getString(2);
+                                String s3 = resultSet.getString(3);
+                                String s4 = resultSet.getString(4);
+
+                                model.addRow(new Object[]{s1, s2, s3, s4});
+                            }
+                        }
+                        else{
+                            model.addColumn("Nume");
+                            model.addColumn("Prenume");
+                            model.addColumn("CNP");
+
+                            while (resultSet.next()) {
+                                String s1 = resultSet.getString(1);
+                                String s2 = resultSet.getString(2);
+                                String s3 = resultSet.getString(3);
+
+                                model.addRow(new Object[]{s1, s2, s3});
+                            }
+                        }
                     }
-                }
 
-                case "Boli" -> {
-                    model.addColumn("Nume");
-                    while (resultSet.next()) {
-                        String s1 = resultSet.getString(2);
+                    case "CaseDeSanatate " -> {
+                        model.addColumn("Nume");
+                        model.addColumn("NrAsigurati");
 
-                        model.addRow(new Object[]{s1});
+                        while (resultSet.next()) {
+                            String s1 = resultSet.getString(1);
+                            String s2 = resultSet.getString(2);
+
+                            model.addRow(new Object[]{s1, s2});
+                        }
+                    }
+
+                    case "Boli " -> {
+                        model.addColumn("Nume");
+                        model.addColumn("NrPacienti");
+
+                        while (resultSet.next()) {
+                            String s1 = resultSet.getString(1);
+                            String s2 = resultSet.getString(2);
+
+                            model.addRow(new Object[]{s1, s2});
+                        }
                     }
                 }
             }

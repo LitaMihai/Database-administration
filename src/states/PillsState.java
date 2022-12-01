@@ -136,9 +136,16 @@ public class PillsState implements PackageState, ActionListener {
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == this.viewButton)
             dataBase.SendQuery("SELECT Medicamente.Denumire, Boli.Nume AS 'Boala Tratata',  Medicamente.ReactiiAdversePosibile " +
-                    "FROM Medicamente INNER JOIN Boli ON Medicamente.BoalaID = Boli.BoalaID");
+                    "FROM Medicamente INNER JOIN Boli ON Medicamente.BoalaID = Boli.BoalaID", false, false);
 
-        if(e.getSource() == this.insertButton)
+        else if(e.getSource() == this.query1Button)
+            dataBase.SendQuery(
+                    "SELECT Medicamente.Denumire, Medicamente.ReactiiAdversePosibile\n" +
+                            "FROM Medicamente INNER JOIN Boli ON Medicamente.BoalaID = Boli.BoalaID\n" +
+                            "WHERE Boli.Nume LIKE '%diabet%'", true, true
+            );
+
+        else if(e.getSource() == this.insertButton)
             this.next(Package.pkg);
 
         else if(e.getSource() == this.backButton)

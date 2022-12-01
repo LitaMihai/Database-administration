@@ -155,9 +155,25 @@ public class DoctorsState implements PackageState, ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == this.viewButton)
-            dataBase.SendQuery("SELECT * FROM Doctori");
+            dataBase.SendQuery("SELECT * FROM Doctori", false, false);
 
-        if(e.getSource() == this.insertButton)
+        else if(e.getSource() == this.query1Button)
+            dataBase.SendQuery(
+                      "SELECT Doctori.Nume, Doctori.Prenume, Doctori.Specializare, COUNT(PacientiDoctori.DoctorID) NrPacienti\n" +
+                            "FROM Doctori INNER JOIN PacientiDoctori ON Doctori.DoctorID = PacientiDoctori.DoctorID\n" +
+                            "GROUP BY Doctori.Nume, Doctori.Prenume, Doctori.Specializare\n" +
+                            "HAVING COUNT(PacientiDoctori.DoctorID) > 5", true, true
+            );
+
+        else if(e.getSource() == this.query2Button)
+            dataBase.SendQuery(
+                      "SELECT Doctori.Nume, Doctori.Prenume, Doctori.Specializare\n" +
+                            "FROM Doctori INNER JOIN PacientiDoctori ON Doctori.DoctorID = PacientiDoctori.DoctorID INNER JOIN Pacienti ON Pacienti.PacientID = PacientiDoctori.PacientID\n" +
+                            "WHERE Pacienti.Sex = 'F'\n" +
+                            "GROUP BY Doctori.Nume, Doctori.Prenume, Doctori.Specializare", true, false
+            );
+
+        else if(e.getSource() == this.insertButton)
             this.next(Package.pkg);
 
         else if(e.getSource() == this.backButton)
