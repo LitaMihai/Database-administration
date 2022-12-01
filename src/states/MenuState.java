@@ -172,10 +172,10 @@ public class MenuState implements PackageState, ActionListener {
                 pkg.setState(new PillsState(this.frame, this.dataBase));
                 break;
             case 2:
-                // pkg.setState(new PatientsState(this.frame, this.dataBase));
+                pkg.setState(new PatientsState(this.frame, this.dataBase));
                 break;
             case 3:
-                // pkg.setState(new HealthInsuranceHousesState(this.frame, this.dataBase));
+                pkg.setState(new HealthInsuranceHousesState(this.frame, this.dataBase));
                 break;
             case 4:
                 pkg.setState(new DiseasesState(this.frame, this.dataBase));
