@@ -1,7 +1,9 @@
 package Database;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.xml.transform.Result;
 import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
@@ -42,7 +44,6 @@ public class DataBase {
     public int sendInsert(String query){
         int done;
         try{
-            System.out.println(query);
             done = this.statement.executeUpdate(query);
             return done;
         }
@@ -53,6 +54,98 @@ public class DataBase {
 
     public Statement getStatement(){
         return this.statement;
+    }
+
+    public int getNumberOf(String objectsToBeCounted){
+        ResultSet resultSet;
+        switch(objectsToBeCounted){
+            case "Pills":
+                int numberOfPills = 0;
+                try{
+                    resultSet = this.statement.executeQuery("SELECT COUNT(MedicamentID) AS Nr FROM Medicamente;");
+
+                    while(resultSet.next())
+                        numberOfPills = resultSet.getInt("Nr");
+                    return numberOfPills;
+                }
+                catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            case "Health Insurance Houses":
+                int numberOfHealthInsuranceHouses = 0;
+                try{
+                    resultSet = this.statement.executeQuery("SELECT COUNT(CasaDeSanatateID) FROM CaseDeSanatate");
+
+                    while(resultSet.next())
+                        numberOfHealthInsuranceHouses = resultSet.getInt(1);
+                    return numberOfHealthInsuranceHouses;
+                }
+                catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            case "Diseases":
+                int numberOfDiseases = 0;
+                try{
+                    resultSet = this.statement.executeQuery("SELECT COUNT(BoalaID) FROM Boli");
+
+                    while(resultSet.next())
+                        numberOfDiseases = resultSet.getInt(1);
+                    return numberOfDiseases;
+                }
+                catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+        }
+        return 0;
+    }
+
+    public void getObjects(String objectsTableName, String[] objectsArray){
+        ResultSet resultSet;
+        switch (objectsTableName){
+            case "Pills":
+                try{
+                    resultSet = this.statement.executeQuery("SELECT * FROM Medicamente");
+                    int i = 0;
+                    while (resultSet.next()) {
+                        String s1 = resultSet.getString(3);
+                        objectsArray[i] = s1;
+                        i++;
+                    }
+                }
+                catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            case "Health Insurance Houses":
+                try{
+                    resultSet = this.statement.executeQuery("SELECT * FROM CaseDeSanatate");
+                    int i = 0;
+                    while (resultSet.next()) {
+                        String s1 = resultSet.getString(2);
+                        objectsArray[i] = s1;
+                        i++;
+                    }
+                }
+                catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            case "Diseases":
+                try{
+                    resultSet = this.statement.executeQuery("SELECT * FROM Boli");
+                    int i = 0;
+                    while (resultSet.next()) {
+                        String s1 = resultSet.getString(2);
+                        objectsArray[i] = s1;
+                        i++;
+                    }
+                }
+                catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+        }
+
     }
 
     public void SendQuery(String query, boolean isAdditionalQuery, boolean isFirstAdditionalQuery){
@@ -78,13 +171,14 @@ public class DataBase {
             table.setShowVerticalLines(false);
             table.getTableHeader().setReorderingAllowed(false);
             table.setPreferredScrollableViewportSize(table.getPreferredSize());
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment( JLabel.CENTER );
 
             model.getDataVector().removeAllElements();
             model.setColumnCount(0);
             model.fireTableDataChanged();
 
             tabela = getTableNameFromQuery(query);
-            // System.out.println(tabela);
             if(!isAdditionalQuery){
                 switch (tabela) {
                     case "Doctori" -> {
@@ -98,6 +192,8 @@ public class DataBase {
 
                             model.addRow(new Object[]{s1, s2, s3});
                         }
+                        for(int i = 0; i < 3; i++)
+                            table.getColumnModel().getColumn(i).setCellRenderer( centerRenderer );
                     }
 
                     case "Medicamente " -> {
@@ -111,6 +207,8 @@ public class DataBase {
 
                             model.addRow(new Object[]{s1, s2, s3});
                         }
+                        for(int i = 0; i < 3; i++)
+                            table.getColumnModel().getColumn(i).setCellRenderer( centerRenderer );
                     }
 
                     case "Pacienti " -> {
@@ -140,6 +238,8 @@ public class DataBase {
 
                             model.addRow(new Object[]{s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11});
                         }
+                        for(int i = 0; i < 11; i++)
+                            table.getColumnModel().getColumn(i).setCellRenderer( centerRenderer );
                     }
 
                     case "CaseDeSanatate" -> {
@@ -149,6 +249,7 @@ public class DataBase {
 
                             model.addRow(new Object[]{s1});
                         }
+                        table.getColumnModel().getColumn(0).setCellRenderer( centerRenderer );
                     }
 
                     case "Boli" -> {
@@ -158,6 +259,7 @@ public class DataBase {
 
                             model.addRow(new Object[]{s1});
                         }
+                        table.getColumnModel().getColumn(0).setCellRenderer( centerRenderer );
                     }
                 }
             }
@@ -177,6 +279,8 @@ public class DataBase {
 
                                 model.addRow(new Object[]{s1, s2, s3, s4});
                             }
+                            for(int i = 0; i < 4; i++)
+                                table.getColumnModel().getColumn(i).setCellRenderer( centerRenderer );
                         }
                         else{
                             model.addColumn("Nume");
@@ -190,6 +294,8 @@ public class DataBase {
 
                                 model.addRow(new Object[]{s1, s2, s3});
                             }
+                            for(int i = 0; i < 3; i++)
+                                table.getColumnModel().getColumn(i).setCellRenderer( centerRenderer );
                         }
                     }
 
@@ -203,6 +309,8 @@ public class DataBase {
 
                             model.addRow(new Object[]{s1, s2});
                         }
+                        for(int i = 0; i < 2; i++)
+                            table.getColumnModel().getColumn(i).setCellRenderer( centerRenderer );
                     }
 
                     case "Pacienti " -> {
@@ -220,6 +328,8 @@ public class DataBase {
 
                                 model.addRow(new Object[]{s1, s2, s3, s4});
                             }
+                            for(int i = 0; i < 4; i++)
+                                table.getColumnModel().getColumn(i).setCellRenderer( centerRenderer );
                         }
                         else{
                             model.addColumn("Nume");
@@ -233,6 +343,8 @@ public class DataBase {
 
                                 model.addRow(new Object[]{s1, s2, s3});
                             }
+                            for(int i = 0; i < 3; i++)
+                                table.getColumnModel().getColumn(i).setCellRenderer( centerRenderer );
                         }
                     }
 
@@ -246,6 +358,8 @@ public class DataBase {
 
                             model.addRow(new Object[]{s1, s2});
                         }
+                        for(int i = 0; i < 2; i++)
+                            table.getColumnModel().getColumn(i).setCellRenderer( centerRenderer );
                     }
 
                     case "Boli " -> {
@@ -258,6 +372,8 @@ public class DataBase {
 
                             model.addRow(new Object[]{s1, s2});
                         }
+                        for(int i = 0; i < 2; i++)
+                            table.getColumnModel().getColumn(i).setCellRenderer( centerRenderer );
                     }
                 }
             }

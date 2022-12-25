@@ -11,7 +11,7 @@ public class Main {
             JFrame mainFrame = new JFrame();
 
             mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            mainFrame.setSize(800, 600);
+            mainFrame.setSize(1200, 800);
             mainFrame.setTitle("Login");
             mainFrame.setLocationRelativeTo(null);
             mainFrame.setLayout(null);

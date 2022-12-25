@@ -12,6 +12,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import com.toedter.calendar.JCalendar;
 
 public class InsertState implements PackageState, ActionListener {
 
@@ -23,6 +24,7 @@ public class InsertState implements PackageState, ActionListener {
     final private String sqlTable;
     final private JButton sendButton, backButton;
     final private JLabel title;
+    private boolean show;
 
     // Doctors
     final private JLabel doctorsNameLabel, doctorsSurnameLabel, doctorsSpecialityLabel;
@@ -30,16 +32,26 @@ public class InsertState implements PackageState, ActionListener {
 
     // Pills
     final private JLabel pillsNameLabel, pillsDiseaseTreatedLabel, pillsSideEffectsLabel;
-    final private JTextField pillsNameInput, pillsDiseaseTreatedInput, pillsSideEffectsInput;
+    final private JTextField pillsNameInput, pillsSideEffectsInput;
+    final private JComboBox<String> pillsDiseaseTreatedDropdownList;
 
     // Patients
     final private JLabel patientNameLabel, patientSurnameLabel, patientPersonalIdentificationNumberLabel, patientStreetLabel;
     final private JLabel patientCityLabel, patientCountyLabel, patientBirthDateLabel, patientHealthInsuranceHouseLabel, patientTestedPillLabel;
     final private JLabel patientStreetNumberLabel, patientSexLabel;
     final private JTextField patientNameInput, patientSurnameInput, patientPersonalIdentificationNumberInput, patientStreetInput;
-    final private JTextField patientCityInput, patientCountyInput, patientBirthDateInput, patientHealthInsuranceHouseInput, patientTestedPillInput;
-    final private JTextField patientStreetNumberInput, patientSexInput;
+    final private JTextField patientCityInput, patientCountyInput, patientBirthDateInput;
 
+    final private JComboBox<String>  patientTestedPillDropdownList, patientHealthInsuranceHouseDropdownList;
+    final private String testedPillsOptions[];
+    final private String healthInsuranceHouseOptions[];
+    final private JTextField patientStreetNumberInput;
+    final private JButton pickDate;
+    final private JCalendar calendar;
+    private String patientBirthDateSQL;
+    final private JComboBox<String> sexDropdownList;
+    final private String sexOptions[] = {"M", "F"};
+    final private String diseasesOptions[];
 
     // Diseases
     final private JLabel diseasesNameLabel;
@@ -63,6 +75,8 @@ public class InsertState implements PackageState, ActionListener {
 
         this.title = new JLabel();
 
+        this.show = false;
+
         // Doctors
         this.doctorsNameLabel = new JLabel();
         this.doctorsSurnameLabel = new JLabel();
@@ -72,14 +86,26 @@ public class InsertState implements PackageState, ActionListener {
         this.doctorsSpecialityInput = new JTextField();
 
         // Pills
+        int numberOfDiseases = this.dataBase.getNumberOf("Diseases");
+        this.diseasesOptions = new String[numberOfDiseases];
+        this.dataBase.getObjects("Diseases", this.diseasesOptions);
+
         this.pillsNameLabel = new JLabel();
         this.pillsDiseaseTreatedLabel = new JLabel();
         this.pillsSideEffectsLabel = new JLabel();
         this.pillsNameInput = new JTextField();
-        this.pillsDiseaseTreatedInput = new JTextField();
+        this.pillsDiseaseTreatedDropdownList = new JComboBox<>(this.diseasesOptions);
         this.pillsSideEffectsInput = new JTextField();
 
         // Patients
+        int numberOfPills = this.dataBase.getNumberOf("Pills");
+        this.testedPillsOptions = new String[numberOfPills];
+        this.dataBase.getObjects("Pills", this.testedPillsOptions);
+
+        int numberOfHealthInsuranceHouses = this.dataBase.getNumberOf("Health Insurance Houses");
+        this.healthInsuranceHouseOptions = new String[numberOfHealthInsuranceHouses];
+        this.dataBase.getObjects("Health Insurance Houses", this.healthInsuranceHouseOptions);
+
         this.patientNameLabel = new JLabel();
         this.patientSurnameLabel = new JLabel();
         this.patientPersonalIdentificationNumberLabel = new JLabel();
@@ -98,10 +124,13 @@ public class InsertState implements PackageState, ActionListener {
         this.patientCityInput = new JTextField();
         this.patientCountyInput = new JTextField();
         this.patientBirthDateInput = new JTextField();
-        this.patientHealthInsuranceHouseInput = new JTextField();
-        this.patientTestedPillInput = new JTextField();
+        this.patientHealthInsuranceHouseDropdownList = new JComboBox<>(healthInsuranceHouseOptions);
+        this.patientTestedPillDropdownList = new JComboBox<>(testedPillsOptions);
         this.patientStreetNumberInput = new JTextField();
-        this.patientSexInput = new JTextField();
+        this.pickDate = new JButton();
+        this.calendar = new JCalendar();
+        this.patientBirthDateSQL = "";
+        this.sexDropdownList = new JComboBox<>(sexOptions);
 
         // Diseases
         this.diseasesNameLabel = new JLabel();
@@ -195,10 +224,11 @@ public class InsertState implements PackageState, ActionListener {
         this.pillsDiseaseTreatedLabel.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
         this.pillsDiseaseTreatedLabel.setForeground(this.textColor);
 
-        this.pillsDiseaseTreatedInput.setBorder(null);
-        this.pillsDiseaseTreatedInput.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
-        this.pillsDiseaseTreatedInput.setBackground(this.inputColor);
-        this.pillsDiseaseTreatedInput.setForeground(this.textColor);
+        this.pillsDiseaseTreatedDropdownList.setBorder(null);
+        this.pillsDiseaseTreatedDropdownList.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.pillsDiseaseTreatedDropdownList.setBackground(this.inputColor);
+        this.pillsDiseaseTreatedDropdownList.setForeground(this.textColor);
+        this.pillsDiseaseTreatedDropdownList.setFocusable(false);
 
         this.pillsSideEffectsLabel.setText("Reactii Adverse Posibile");
         this.pillsSideEffectsLabel.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
@@ -277,19 +307,21 @@ public class InsertState implements PackageState, ActionListener {
         this.patientHealthInsuranceHouseLabel.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
         this.patientHealthInsuranceHouseLabel.setForeground(this.textColor);
 
-        this.patientHealthInsuranceHouseInput.setBorder(null);
-        this.patientHealthInsuranceHouseInput.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
-        this.patientHealthInsuranceHouseInput.setBackground(this.inputColor);
-        this.patientHealthInsuranceHouseInput.setForeground(this.textColor);
+        this.patientHealthInsuranceHouseDropdownList.setBorder(null);
+        this.patientHealthInsuranceHouseDropdownList.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.patientHealthInsuranceHouseDropdownList.setBackground(this.inputColor);
+        this.patientHealthInsuranceHouseDropdownList.setForeground(this.textColor);
+        this.patientHealthInsuranceHouseDropdownList.setFocusable(false);
 
         this.patientTestedPillLabel.setText("Medicament Testat");
         this.patientTestedPillLabel.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
         this.patientTestedPillLabel.setForeground(this.textColor);
 
-        this.patientTestedPillInput.setBorder(null);
-        this.patientTestedPillInput.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
-        this.patientTestedPillInput.setBackground(this.inputColor);
-        this.patientTestedPillInput.setForeground(this.textColor);
+        this.patientTestedPillDropdownList.setBorder(null);
+        this.patientTestedPillDropdownList.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.patientTestedPillDropdownList.setBackground(this.inputColor);
+        this.patientTestedPillDropdownList.setForeground(this.textColor);
+        this.patientTestedPillDropdownList.setFocusable(false);
 
         this.patientStreetNumberLabel.setText("Nr");
         this.patientStreetNumberLabel.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
@@ -304,10 +336,33 @@ public class InsertState implements PackageState, ActionListener {
         this.patientSexLabel.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
         this.patientSexLabel.setForeground(this.textColor);
 
-        this.patientSexInput.setBorder(null);
-        this.patientSexInput.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
-        this.patientSexInput.setBackground(this.inputColor);
-        this.patientSexInput.setForeground(this.textColor);
+        this.sexDropdownList.setBorder(null);
+        this.sexDropdownList.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.sexDropdownList.setBackground(this.inputColor);
+        this.sexDropdownList.setForeground(this.textColor);
+        this.sexDropdownList.setFocusable(false);
+
+        this.pickDate.setText("Date");
+        this.pickDate.addActionListener(this);
+        this.pickDate.setFont(new Font("Poppins Medium", Font.BOLD, 15));
+        this.pickDate.setFocusable(false);
+        this.pickDate.setForeground(this.textColor);
+        this.pickDate.setBackground(this.inputColor);
+
+        this.calendar.setVisible(false);
+        this.calendar.getDayChooser().addPropertyChangeListener("day", e ->{
+            String year = Integer.toString(this.calendar.getYearChooser().getYear());
+            String month = Integer.toString(this.calendar.getMonthChooser().getMonth() + 1);
+            String day = Integer.toString(this.calendar.getDayChooser().getDay());
+
+            this.patientBirthDateInput.setText(
+                year + "." +
+                month + "." +
+                day
+            );
+
+            this.patientBirthDateSQL = year + month + day;
+        });
 
         // HealthInsuranceHouses
         this.healthInsuranceHousesNameLabel.setText("Nume");
@@ -348,7 +403,7 @@ public class InsertState implements PackageState, ActionListener {
                 this.pillsNameLabel.setBounds(this.title.getX() - 50, this.title.getY() + 130, 250, 30);
                 this.pillsNameInput.setBounds(this.pillsNameLabel.getX() + 230, this.pillsNameLabel.getY(), 295, 30);
                 this.pillsDiseaseTreatedLabel.setBounds(this.pillsNameLabel.getX(), this.pillsNameLabel.getY() + 57, 250, 30);
-                this.pillsDiseaseTreatedInput.setBounds(this.pillsDiseaseTreatedLabel.getX() + 230, this.pillsDiseaseTreatedLabel.getY(), 295, 30);
+                this.pillsDiseaseTreatedDropdownList.setBounds(this.pillsDiseaseTreatedLabel.getX() + 230, this.pillsDiseaseTreatedLabel.getY(), 295, 30);
                 this.pillsSideEffectsLabel.setBounds(this.pillsDiseaseTreatedLabel.getX(), this.pillsDiseaseTreatedLabel.getY() + 57, 250, 30);
                 this.pillsSideEffectsInput.setBounds(this.pillsSideEffectsLabel.getX() + 230, this.pillsSideEffectsLabel.getY(), 295, 30);
                 this.sendButton.setBounds(this.pillsSideEffectsLabel.getX(), this.pillsSideEffectsLabel.getY() + 150, 170, 30);
@@ -368,16 +423,18 @@ public class InsertState implements PackageState, ActionListener {
                 this.patientCityInput.setBounds(this.patientCityLabel.getX() + 200, this.patientCityLabel.getY(), 300, 30);
                 this.patientCountyLabel.setBounds(this.patientCityLabel.getX(), this.patientCityLabel.getY() + 44, 200, 30);
                 this.patientCountyInput.setBounds(this.patientCountyLabel.getX() + 200, this.patientCountyLabel.getY(), 300, 30);
-                this.patientBirthDateLabel.setBounds(this.patientCountyLabel.getX(), this.patientCountyLabel.getY() + 44, 200, 30);
+                this.patientHealthInsuranceHouseLabel.setBounds(this.patientCountyLabel.getX(), this.patientCountyLabel.getY() + 44, 200, 30);
+                this.patientHealthInsuranceHouseDropdownList.setBounds(this.patientHealthInsuranceHouseLabel.getX() + 200, this.patientHealthInsuranceHouseLabel.getY(), 300, 30);
+                this.patientBirthDateLabel.setBounds(this.patientHealthInsuranceHouseLabel.getX(), this.patientHealthInsuranceHouseLabel.getY() + 44, 200, 30);
                 this.patientBirthDateInput.setBounds(this.patientBirthDateLabel.getX() + 200, this.patientBirthDateLabel.getY(), 300, 30);
-                this.patientHealthInsuranceHouseLabel.setBounds(this.patientBirthDateLabel.getX(), this.patientBirthDateLabel.getY() + 44, 200, 30);
-                this.patientHealthInsuranceHouseInput.setBounds(this.patientHealthInsuranceHouseLabel.getX() + 200, this.patientHealthInsuranceHouseLabel.getY(), 300, 30);
-                this.patientTestedPillLabel.setBounds(this.patientHealthInsuranceHouseLabel.getX(), this.patientHealthInsuranceHouseLabel.getY() + 44, 200, 30);
-                this.patientTestedPillInput.setBounds(this.patientTestedPillLabel.getX() + 200, this.patientTestedPillLabel.getY(), 300, 30);
+                this.pickDate.setBounds(this.patientBirthDateInput.getX() + 340, this.patientBirthDateInput.getY(), 70, 30);
+                this.calendar.setBounds(this.pickDate.getX() + 80, this.pickDate.getY(), 300, 160);
+                this.patientTestedPillLabel.setBounds(this.patientBirthDateLabel.getX(), this.patientBirthDateLabel.getY() + 44, 200, 30);
+                this.patientTestedPillDropdownList.setBounds(this.patientTestedPillLabel.getX() + 200, this.patientTestedPillLabel.getY(), 300, 30);
                 this.patientStreetNumberLabel.setBounds(this.patientStreetInput.getX() + 334, this.patientStreetInput.getY(), 50, 30);
                 this.patientStreetNumberInput.setBounds(this.patientStreetNumberLabel.getX() + 35, this.patientStreetNumberLabel.getY(), 50, 30);
-                this.patientSexLabel.setBounds(this.patientBirthDateInput.getX() + 334, this.patientBirthDateInput.getY(), 50, 30);
-                this.patientSexInput.setBounds(this.patientSexLabel.getX() + 55, this.patientSexLabel.getY(), 50, 30);
+                this.patientSexLabel.setBounds(this.patientCountyInput.getX() + 334, this.patientCountyInput.getY(), 50, 30);
+                this.sexDropdownList.setBounds(this.patientSexLabel.getX() + 50, this.patientSexLabel.getY(), 50, 30);
                 this.sendButton.setBounds(this.patientTestedPillLabel.getX() + 80, this.patientTestedPillLabel.getY() + 70, 170, 30);
                 this.backButton.setBounds(this.sendButton.getX() + 356, this.sendButton.getY(), 170, 30);
             }
@@ -414,7 +471,7 @@ public class InsertState implements PackageState, ActionListener {
                 this.frame.add(this.pillsNameLabel);
                 this.frame.add(this.pillsNameInput);
                 this.frame.add(this.pillsDiseaseTreatedLabel);
-                this.frame.add(this.pillsDiseaseTreatedInput);
+                this.frame.add(this.pillsDiseaseTreatedDropdownList);
                 this.frame.add(this.pillsSideEffectsLabel);
                 this.frame.add(this.pillsSideEffectsInput);
             }
@@ -433,14 +490,16 @@ public class InsertState implements PackageState, ActionListener {
                 this.frame.add(this.patientCountyInput);
                 this.frame.add(this.patientBirthDateLabel);
                 this.frame.add(this.patientBirthDateInput);
+                this.frame.add(this.pickDate);
+                this.frame.add(this.calendar);
                 this.frame.add(this.patientHealthInsuranceHouseLabel);
-                this.frame.add(this.patientHealthInsuranceHouseInput);
+                this.frame.add(this.patientHealthInsuranceHouseDropdownList);
                 this.frame.add(this.patientTestedPillLabel);
-                this.frame.add(this.patientTestedPillInput);
+                this.frame.add(this.patientTestedPillDropdownList);
                 this.frame.add(this.patientStreetNumberLabel);
                 this.frame.add(this.patientStreetNumberInput);
                 this.frame.add(this.patientSexLabel);
-                this.frame.add(this.patientSexInput);
+                this.frame.add(this.sexDropdownList);
             }
             case "HealthInsuranceHouses" -> {
                 this.frame.add(this.healthInsuranceHousesNameLabel);
@@ -461,7 +520,6 @@ public class InsertState implements PackageState, ActionListener {
 
     private boolean areEmptyPillsButtons(){
         return !this.pillsNameInput.getText().equals("")
-                && !this.pillsDiseaseTreatedInput.getText().equals("")
                 && !this.pillsSideEffectsInput.getText().equals("");
     }
 
@@ -473,10 +531,7 @@ public class InsertState implements PackageState, ActionListener {
                 && !this.patientCityInput.getText().equals("")
                 && !this.patientCountyInput.getText().equals("")
                 && !this.patientBirthDateInput.getText().equals("")
-                && !this.patientHealthInsuranceHouseInput.getText().equals("")
-                && !this.patientTestedPillInput.getText().equals("")
-                && !this.patientStreetNumberInput.getText().equals("")
-                && !this.patientSexInput.getText().equals("");
+                && !this.patientStreetNumberInput.getText().equals("");
     }
 
     private boolean areEmptyDiseasesButtons(){
@@ -509,7 +564,7 @@ public class InsertState implements PackageState, ActionListener {
                         int s1 = -1;
                         ResultSet resultSet;
                         try {
-                            resultSet = this.dataBase.getStatement().executeQuery("SELECT BoalaID FROM Boli WHERE Nume = '" + this.pillsDiseaseTreatedInput.getText() + "'");
+                            resultSet = this.dataBase.getStatement().executeQuery("SELECT BoalaID FROM Boli WHERE Nume = '" + this.pillsDiseaseTreatedDropdownList.getItemAt(this.pillsDiseaseTreatedDropdownList.getSelectedIndex()).toString() + "'");
                             while (resultSet.next()) {
                                 s1 = resultSet.getInt(1);
                             }
@@ -534,11 +589,11 @@ public class InsertState implements PackageState, ActionListener {
                         int s1 = -1, s2 = -1;
                         ResultSet resultSet;
                         try {
-                            resultSet = this.dataBase.getStatement().executeQuery("SELECT MedicamentID FROM Medicamente WHERE Denumire = '" + this.patientTestedPillInput.getText() + "'");
+                            resultSet = this.dataBase.getStatement().executeQuery("SELECT MedicamentID FROM Medicamente WHERE Denumire = '" + this.patientTestedPillDropdownList.getItemAt(this.patientTestedPillDropdownList.getSelectedIndex()).toString() + "'");
                             while (resultSet.next()) {
                                 s1 = resultSet.getInt(1);
                             }
-                            resultSet = this.dataBase.getStatement().executeQuery("SELECT CasaDeSanatateID FROM CaseDeSanatate WHERE Nume = '" + this.patientHealthInsuranceHouseInput.getText() + "'");
+                            resultSet = this.dataBase.getStatement().executeQuery("SELECT CasaDeSanatateID FROM CaseDeSanatate WHERE Nume = '" + this.patientHealthInsuranceHouseDropdownList.getItemAt(this.patientHealthInsuranceHouseDropdownList.getSelectedIndex()).toString() + "'");
                             while (resultSet.next()) {
                                 s2 = resultSet.getInt(1);
                             }
@@ -556,8 +611,8 @@ public class InsertState implements PackageState, ActionListener {
                                     this.patientStreetNumberInput.getText() + "', '" +
                                     this.patientCityInput.getText() + "', '" +
                                     this.patientCountyInput.getText() + "', '" +
-                                    this.patientSexInput.getText() + "', '" +
-                                    this.patientBirthDateInput.getText() + "');"
+                                    this.sexDropdownList.getItemAt(this.sexDropdownList.getSelectedIndex()).toString() + "', '" +
+                                    this.patientBirthDateSQL + "');"
                             );
 
                             if(done == 1)
@@ -593,6 +648,11 @@ public class InsertState implements PackageState, ActionListener {
 
         else if(e.getSource() == this.backButton){
             this.prev(Package.pkg);
+        }
+
+        else if(e.getSource() == this.pickDate){
+            this.show = !this.show;
+            this.calendar.setVisible(show);
         }
     }
 

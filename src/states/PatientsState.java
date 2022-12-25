@@ -151,7 +151,6 @@ public class PatientsState implements PackageState, ActionListener {
         this.frame.add(this.query2Button);
     }
 
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == this.viewButton)

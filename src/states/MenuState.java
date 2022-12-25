@@ -67,7 +67,7 @@ public class MenuState implements PackageState, ActionListener {
 
         this.frame.getContentPane().setBackground(this.backgroundColor);
 
-        this.title.setText("Afisare Generala");
+        this.title.setText("Meniu Principal");
         this.title.setFont(new Font("Poppins Medium", Font.BOLD, 30));
         this.title.setForeground(this.textColor);
         this.title.setHorizontalAlignment(SwingConstants.CENTER);
