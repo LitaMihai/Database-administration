@@ -52,6 +52,17 @@ public class DataBase {
         }
     }
 
+    public int sendDelete(String query){
+        int done;
+        try{
+            done = this.statement.executeUpdate(query);
+            return done;
+        }
+        catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
     public Statement getStatement(){
         return this.statement;
     }

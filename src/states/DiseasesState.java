@@ -19,6 +19,7 @@ public class DiseasesState implements PackageState, ActionListener {
     final private DataBase dataBase;
     final private JLabel title, query1Text;
     final private JButton viewButton, deleteButton, insertButton, backButton, query1Button;
+    private boolean buttonPressed;
 
     public DiseasesState(JFrame frame, DataBase dataBase) {
         this.frame = frame;
@@ -136,8 +137,15 @@ public class DiseasesState implements PackageState, ActionListener {
                     true, true
             );
 
-        else if(e.getSource() == this.insertButton)
+        else if(e.getSource() == this.deleteButton){
+            this.buttonPressed = false;
             this.next(Package.pkg);
+        }
+
+        else if(e.getSource() == this.insertButton){
+            this.buttonPressed = true;
+            this.next(Package.pkg);
+        }
 
         else if(e.getSource() == this.backButton)
             this.prev(Package.pkg);
@@ -145,7 +153,11 @@ public class DiseasesState implements PackageState, ActionListener {
 
     @Override
     public void next(Package pkg) {
-        pkg.setState(new InsertState(this.frame, "Diseases", this.dataBase));
+        if(this.buttonPressed == true)
+            pkg.setState(new InsertState(this.frame, "Diseases", this.dataBase));
+
+        else if(this.buttonPressed == false)
+            pkg.setState(new DeleteState(this.frame, "Diseases", this.dataBase));
     }
 
     @Override
