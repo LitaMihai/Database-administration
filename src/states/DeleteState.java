@@ -25,15 +25,21 @@ public class DeleteState implements PackageState, ActionListener {
     // Doctors
 
     // Pills
+    final private String pillsOptions[];
+    final private JComboBox<String> pillsDropdownList;
+    final private JLabel pillsNameLabel;
 
     // Patients
 
     // Diseases
     final private String diseasesOptions[];
-    final private JComboBox diseasesDropdownList;
+    final private JComboBox<String> diseasesDropdownList;
     final private JLabel diseasesNameLabel;
 
     // HealthInsuranceHouses
+    final private String healthInsuranceHousesOptions[];
+    final private JComboBox<String> healthInsuranceHousesDropdownList;
+    final private JLabel healthInsuranceHousesNameLabel;
 
     DeleteState(JFrame frame, String sqlTable, DataBase dataBase){
         this.frame = frame;
@@ -52,6 +58,12 @@ public class DeleteState implements PackageState, ActionListener {
         // Doctors
 
         // Pills
+        int numberOfPills = this.dataBase.getNumberOf("Pills");
+        this.pillsOptions = new String[numberOfPills];
+        this.dataBase.getObjects("Pills", this.pillsOptions);
+
+        this.pillsDropdownList = new JComboBox<>(this.pillsOptions);
+        this.pillsNameLabel = new JLabel();
 
         // Patients
 
@@ -64,6 +76,12 @@ public class DeleteState implements PackageState, ActionListener {
         this.diseasesNameLabel = new JLabel();
 
         // HealthInsuranceHouses
+        int numberOfHealthInsuranceHouses = this.dataBase.getNumberOf("HealthInsuranceHouses");
+        this.healthInsuranceHousesOptions = new String[numberOfHealthInsuranceHouses];
+        this.dataBase.getObjects("HealthInsuranceHouses", this.healthInsuranceHousesOptions);
+
+        this.healthInsuranceHousesDropdownList = new JComboBox<>(this.healthInsuranceHousesOptions);
+        this.healthInsuranceHousesNameLabel = new JLabel();
 
         InitVariables();
         AddToPanel();
@@ -110,11 +128,20 @@ public class DeleteState implements PackageState, ActionListener {
         // Doctors
 
         // Pills
+        this.pillsNameLabel.setText("Name");
+        this.pillsNameLabel.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.pillsNameLabel.setForeground(this.textColor);
+
+        this.pillsDropdownList.setBorder(null);
+        this.pillsDropdownList.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.pillsDropdownList.setBackground(this.inputColor);
+        this.pillsDropdownList.setForeground(this.textColor);
+        this.pillsDropdownList.setFocusable(false);
 
         // Patients
 
         // Diseases
-        this.diseasesNameLabel.setText("Nume");
+        this.diseasesNameLabel.setText("Name");
         this.diseasesNameLabel.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
         this.diseasesNameLabel.setForeground(this.textColor);
 
@@ -125,16 +152,37 @@ public class DeleteState implements PackageState, ActionListener {
         this.diseasesDropdownList.setFocusable(false);
 
         // HealthInsuranceHouses
+        this.healthInsuranceHousesNameLabel.setText("Name");
+        this.healthInsuranceHousesNameLabel.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.healthInsuranceHousesNameLabel.setForeground(this.textColor);
+
+        this.healthInsuranceHousesDropdownList.setBorder(null);
+        this.healthInsuranceHousesDropdownList.setFont(new Font("Poppins Medium", Font.PLAIN, 20));
+        this.healthInsuranceHousesDropdownList.setBackground(this.inputColor);
+        this.healthInsuranceHousesDropdownList.setForeground(this.textColor);
+        this.healthInsuranceHousesDropdownList.setFocusable(false);
     }
 
     private void RepositionGUI() {
         this.title.setBounds(this.frame.getWidth() / 2 - (450 / 2), this.frame.getHeight() / 2 - (230), 450, 30);
 
         switch(this.sqlTable){
+            case "Pills" -> {
+                this.pillsNameLabel.setBounds(this.title.getX(), this.title.getY() + 160, 250, 30);
+                this.pillsDropdownList.setBounds(this.pillsNameLabel.getX() + 170, this.pillsNameLabel.getY(), 295, 30);
+                this.sendButton.setBounds(this.pillsNameLabel.getX() - 50, this.pillsNameLabel.getY() + 250, 170, 30);
+                this.backButton.setBounds(this.sendButton.getX() + 356, this.sendButton.getY(), 170, 30);
+            }
             case "Diseases" -> {
                 this.diseasesNameLabel.setBounds(this.title.getX(), this.title.getY() + 160, 250, 30);
                 this.diseasesDropdownList.setBounds(this.diseasesNameLabel.getX() + 170, this.diseasesNameLabel.getY(), 295, 30);
                 this.sendButton.setBounds(this.diseasesNameLabel.getX() - 50, this.diseasesNameLabel.getY() + 250, 170, 30);
+                this.backButton.setBounds(this.sendButton.getX() + 356, this.sendButton.getY(), 170, 30);
+            }
+            case "HealthInsuranceHouses" -> {
+                this.healthInsuranceHousesNameLabel.setBounds(this.title.getX(), this.title.getY() + 160, 250, 30);
+                this.healthInsuranceHousesDropdownList.setBounds(this.healthInsuranceHousesNameLabel.getX() + 170, this.healthInsuranceHousesNameLabel.getY(), 295, 30);
+                this.sendButton.setBounds(this.healthInsuranceHousesNameLabel.getX() - 50, this.healthInsuranceHousesNameLabel.getY() + 250, 170, 30);
                 this.backButton.setBounds(this.sendButton.getX() + 356, this.sendButton.getY(), 170, 30);
             }
         }
@@ -149,6 +197,14 @@ public class DeleteState implements PackageState, ActionListener {
             case "Diseases" -> {
                 this.frame.add(this.diseasesNameLabel);
                 this.frame.add(this.diseasesDropdownList);
+            }
+            case "HealthInsuranceHouses" -> {
+                this.frame.add(this.healthInsuranceHousesNameLabel);
+                this.frame.add(this.healthInsuranceHousesDropdownList);
+            }
+            case "Pills" -> {
+                this.frame.add(this.pillsNameLabel);
+                this.frame.add(this.pillsDropdownList);
             }
         }
     }
@@ -165,6 +221,31 @@ public class DeleteState implements PackageState, ActionListener {
                         this.dataBase.sendDelete("DECLARE @max_seed int = ISNULL((SELECT MAX(BoalaID) FROM Boli),0)\n" +
                                 "DBCC CHECKIDENT (Boli, RESEED, @max_seed);");
                         this.dataBase.SendQuery("SELECT * FROM Boli", false, false);
+                    }
+
+                    this.prev(Package.pkg);
+                    break;
+                case "HealthInsuranceHouses":
+                    done = this.dataBase.sendDelete("DELETE FROM CaseDeSanatate WHERE Nume='" +
+                            this.healthInsuranceHousesDropdownList.getItemAt(this.healthInsuranceHousesDropdownList.getSelectedIndex()) + "';");
+
+                    if(done == 1){
+                        this.dataBase.sendDelete("DECLARE @max_seed int = ISNULL((SELECT MAX(CasaDeSanatateID) FROM CaseDeSanatate),0)\n" +
+                                "DBCC CHECKIDENT (CaseDeSanatate, RESEED, @max_seed);");
+                        this.dataBase.SendQuery("SELECT * FROM CaseDeSanatate", false, false);
+                    }
+
+                    this.prev(Package.pkg);
+                    break;
+                case "Pills":
+                    done = this.dataBase.sendDelete("DELETE FROM Medicamente WHERE Denumire='" +
+                            this.pillsDropdownList.getItemAt(this.pillsDropdownList.getSelectedIndex()) + "';");
+
+                    if(done == 1){
+                        this.dataBase.sendDelete("DECLARE @max_seed int = ISNULL((SELECT MAX(MedicamentID) FROM Medicamente),0)\n" +
+                                "DBCC CHECKIDENT (Medicamente, RESEED, @max_seed);");
+                        this.dataBase.SendQuery("SELECT Medicamente.Denumire, Boli.Nume AS 'Boala Tratata',  Medicamente.ReactiiAdversePosibile " +
+                                "FROM Medicamente INNER JOIN Boli ON Medicamente.BoalaID = Boli.BoalaID", false, false);
                     }
 
                     this.prev(Package.pkg);

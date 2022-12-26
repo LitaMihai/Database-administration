@@ -19,6 +19,7 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
     final private DataBase dataBase;
     final private JLabel title, query1Text;
     final private JButton viewButton, updateButton, deleteButton, insertButton, backButton, query1Button;
+    private int buttonPressed;
 
     public HealthInsuranceHousesState(JFrame frame, DataBase dataBase){
         this.frame = frame;
@@ -37,6 +38,8 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
         this.insertButton = new JButton();
         this.backButton = new JButton();
         this.query1Button = new JButton();
+
+        this.buttonPressed = 0;
 
         InitVariables();
         AddToPanel();
@@ -145,8 +148,20 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
                             "HAVING COUNT(Pacienti.CasaDeSanatateID) > 3", true, true
             );
 
-        else if(e.getSource() == this.insertButton)
+        else if(e.getSource() == this.insertButton){
+            this.buttonPressed = 0;
             this.next(Package.pkg);
+        }
+
+        else if(e.getSource() == this.deleteButton){
+            this.buttonPressed = 1;
+            this.next(Package.pkg);
+        }
+
+        else if(e.getSource() == this.updateButton){
+            this.buttonPressed = 2;
+            this.next(Package.pkg);
+        }
 
         else if(e.getSource() == this.backButton)
             this.prev(Package.pkg);
@@ -154,7 +169,17 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
 
     @Override
     public void next(Package pkg) {
-        pkg.setState(new InsertState(this.frame, "HealthInsuranceHouses", this.dataBase));
+        switch (this.buttonPressed){
+            case 0:
+                pkg.setState(new InsertState(this.frame, "HealthInsuranceHouses", this.dataBase));
+                break;
+            case 1:
+                pkg.setState(new DeleteState(this.frame, "HealthInsuranceHouses", this.dataBase));
+                break;
+            case 2:
+                //pkg.setState(new UpdateState(this.frame, "HealthInsuranceHouses", this.dataBase));
+                break;
+        }
     }
 
     @Override

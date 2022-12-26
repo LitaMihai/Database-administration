@@ -82,7 +82,7 @@ public class DataBase {
                 catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
-            case "Health Insurance Houses":
+            case "HealthInsuranceHouses":
                 int numberOfHealthInsuranceHouses = 0;
                 try{
                     resultSet = this.statement.executeQuery("SELECT COUNT(CasaDeSanatateID) FROM CaseDeSanatate");
@@ -127,7 +127,7 @@ public class DataBase {
                     throw new RuntimeException(e);
                 }
                 break;
-            case "Health Insurance Houses":
+            case "HealthInsuranceHouses":
                 try{
                     resultSet = this.statement.executeQuery("SELECT * FROM CaseDeSanatate");
                     int i = 0;
