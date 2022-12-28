@@ -154,19 +154,19 @@ public class PatientsState implements PackageState, ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == this.viewButton)
-            dataBase.SendQuery("SELECT Pacienti.Nume, Pacienti.Prenume, Pacienti.CNP, Pacienti.Strada, Pacienti.Numar, Pacienti.Oras, Pacienti.Judet, Pacienti.Sex, Pacienti.DataNasterii, CaseDeSanatate.Nume, Medicamente.Denumire\n" +
+            dataBase.sendQuery("SELECT Pacienti.Nume, Pacienti.Prenume, Pacienti.CNP, Pacienti.Strada, Pacienti.Numar, Pacienti.Oras, Pacienti.Judet, Pacienti.Sex, Pacienti.DataNasterii, CaseDeSanatate.Nume, Medicamente.Denumire\n" +
                                "FROM Pacienti INNER JOIN CaseDeSanatate ON Pacienti.CasaDeSanatateID = CaseDeSanatate.CasaDeSanatateID INNER JOIN Medicamente on Pacienti.MedicamentID = Medicamente.MedicamentID", false, false
             );
 
         else if (e.getSource() == this.query1Button)
-            dataBase.SendQuery(
+            dataBase.sendQuery(
                     "SELECT Pacienti.Nume, Pacienti.Prenume, Pacienti.CNP, CaseDeSanatate.Nume\n" +
                             "FROM Pacienti INNER JOIN CaseDeSanatate ON Pacienti.CasaDeSanatateID = CaseDeSanatate.CasaDeSanatateID\n" +
                             "WHERE CaseDeSanatate.Nume = 'CNAS Dolj'", true, true
             );
 
         else if (e.getSource() == this.query2Button)
-            dataBase.SendQuery(
+            dataBase.sendQuery(
                     "SELECT Pacienti.Nume, Pacienti.Prenume, Pacienti.CNP\n" +
                             "FROM Pacienti INNER JOIN Medicamente ON Pacienti.MedicamentID = Medicamente.MedicamentID INNER JOIN Boli ON Boli.BoalaID = Medicamente.BoalaID\n" +
                             "WHERE Boli.Nume LIKE '%cancer%'", true, false

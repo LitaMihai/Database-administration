@@ -126,10 +126,10 @@ public class DiseasesState implements PackageState, ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == this.viewButton)
-            dataBase.SendQuery("SELECT * FROM Boli", false, false);
+            dataBase.sendQuery("SELECT * FROM Boli", false, false);
 
         else if(e.getSource() == this.query1Button)
-            dataBase.SendQuery(
+            dataBase.sendQuery(
                     "SELECT Boli.Nume, COUNT(Pacienti.MedicamentID) AS NrPacienti\n" +
                     "FROM Boli INNER JOIN Medicamente ON Boli.BoalaID = Medicamente.BoalaID INNER JOIN Pacienti ON Pacienti.MedicamentID = Medicamente.MedicamentID\n" +
                     "GROUP BY Boli.Nume\n" +

@@ -220,7 +220,7 @@ public class DeleteState implements PackageState, ActionListener {
                     if(done == 1){
                         this.dataBase.sendDelete("DECLARE @max_seed int = ISNULL((SELECT MAX(BoalaID) FROM Boli),0)\n" +
                                 "DBCC CHECKIDENT (Boli, RESEED, @max_seed);");
-                        this.dataBase.SendQuery("SELECT * FROM Boli", false, false);
+                        this.dataBase.sendQuery("SELECT * FROM Boli", false, false);
                     }
 
                     this.prev(Package.pkg);
@@ -232,7 +232,7 @@ public class DeleteState implements PackageState, ActionListener {
                     if(done == 1){
                         this.dataBase.sendDelete("DECLARE @max_seed int = ISNULL((SELECT MAX(CasaDeSanatateID) FROM CaseDeSanatate),0)\n" +
                                 "DBCC CHECKIDENT (CaseDeSanatate, RESEED, @max_seed);");
-                        this.dataBase.SendQuery("SELECT * FROM CaseDeSanatate", false, false);
+                        this.dataBase.sendQuery("SELECT * FROM CaseDeSanatate", false, false);
                     }
 
                     this.prev(Package.pkg);
@@ -244,7 +244,7 @@ public class DeleteState implements PackageState, ActionListener {
                     if(done == 1){
                         this.dataBase.sendDelete("DECLARE @max_seed int = ISNULL((SELECT MAX(MedicamentID) FROM Medicamente),0)\n" +
                                 "DBCC CHECKIDENT (Medicamente, RESEED, @max_seed);");
-                        this.dataBase.SendQuery("SELECT Medicamente.Denumire, Boli.Nume AS 'Boala Tratata',  Medicamente.ReactiiAdversePosibile " +
+                        this.dataBase.sendQuery("SELECT Medicamente.Denumire, Boli.Nume AS 'Boala Tratata',  Medicamente.ReactiiAdversePosibile " +
                                 "FROM Medicamente INNER JOIN Boli ON Medicamente.BoalaID = Boli.BoalaID", false, false);
                     }
 

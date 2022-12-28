@@ -18,7 +18,7 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
     final private JFrame frame;
     final private DataBase dataBase;
     final private JLabel title, query1Text;
-    final private JButton viewButton, updateButton, deleteButton, insertButton, backButton, query1Button;
+    final private JButton viewButton, deleteButton, insertButton, backButton, query1Button;
     private int buttonPressed;
 
     public HealthInsuranceHousesState(JFrame frame, DataBase dataBase){
@@ -33,7 +33,6 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
         this.query1Text = new JLabel();
 
         this.viewButton = new JButton();
-        this.updateButton = new JButton();
         this.deleteButton = new JButton();
         this.insertButton = new JButton();
         this.backButton = new JButton();
@@ -74,13 +73,6 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
         this.viewButton.setForeground(this.textColor);
         this.viewButton.setBackground(this.inputColor);
 
-        this.updateButton.setText("Update");
-        this.updateButton.addActionListener(this);
-        this.updateButton.setFont(new Font("Poppins Medium", Font.BOLD, 20));
-        this.updateButton.setFocusable(false);
-        this.updateButton.setForeground(this.textColor);
-        this.updateButton.setBackground(this.inputColor);
-
         this.deleteButton.setText("Delete");
         this.deleteButton.addActionListener(this);
         this.deleteButton.setFont(new Font("Poppins Medium", Font.BOLD, 20));
@@ -116,8 +108,7 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
 
         this.title.setBounds(auxWidth - (343), auxHeight - (90 + 68), 230, 30);
         this.viewButton.setBounds(this.title.getX() + 30, this.title.getY() + 77, 170, 30);
-        this.updateButton.setBounds(this.viewButton.getX(), this.viewButton.getY() + 57, 170, 30);
-        this.deleteButton.setBounds(this.updateButton.getX(), this.updateButton.getY() + 57, 170, 30);
+        this.deleteButton.setBounds(this.viewButton.getX(), this.viewButton.getY() + 57, 170, 30);
         this.insertButton.setBounds(this.deleteButton.getX(), this.deleteButton.getY() + 57, 170, 30);
         this.backButton.setBounds(this.title.getX() + 500, this.title.getY() - 110, 170, 30);
         this.query1Text.setBounds(this.viewButton.getX() + 300, this.viewButton.getY(), 313, 60);
@@ -127,7 +118,6 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
     private void AddToPanel(){
         this.frame.add(this.title);
         this.frame.add(this.viewButton);
-        this.frame.add(this.updateButton);
         this.frame.add(this.deleteButton);
         this.frame.add(this.insertButton);
         this.frame.add(this.backButton);
@@ -138,10 +128,10 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == this.viewButton)
-            dataBase.SendQuery("SELECT * FROM CaseDeSanatate", false, false);
+            dataBase.sendQuery("SELECT * FROM CaseDeSanatate", false, false);
 
         else if(e.getSource() == this.query1Button)
-            dataBase.SendQuery(
+            dataBase.sendQuery(
                     "SELECT CaseDeSanatate.Nume, COUNT(Pacienti.CasaDeSanatateID) AS NrAsigurati\n" +
                             "FROM CaseDeSanatate INNER JOIN Pacienti ON CaseDeSanatate.CasaDeSanatateID = Pacienti.CasaDeSanatateID\n" +
                             "GROUP BY CaseDeSanatate.Nume\n" +
@@ -158,11 +148,6 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
             this.next(Package.pkg);
         }
 
-        else if(e.getSource() == this.updateButton){
-            this.buttonPressed = 2;
-            this.next(Package.pkg);
-        }
-
         else if(e.getSource() == this.backButton)
             this.prev(Package.pkg);
     }
@@ -175,9 +160,6 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
                 break;
             case 1:
                 pkg.setState(new DeleteState(this.frame, "HealthInsuranceHouses", this.dataBase));
-                break;
-            case 2:
-                //pkg.setState(new UpdateState(this.frame, "HealthInsuranceHouses", this.dataBase));
                 break;
         }
     }

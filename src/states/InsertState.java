@@ -554,7 +554,7 @@ public class InsertState implements PackageState, ActionListener {
                                 this.doctorsSpecialityInput.getText() + "');");
 
                         if(done == 1)
-                            this.dataBase.SendQuery("SELECT * FROM Doctori", false, false);
+                            this.dataBase.sendQuery("SELECT * FROM Doctori", false, false);
                         this.prev(Package.pkg);
                     }
                     break;
@@ -577,7 +577,7 @@ public class InsertState implements PackageState, ActionListener {
                                     this.pillsNameInput.getText() + "', '" +
                                     this.pillsSideEffectsInput.getText() + "');");
                             if(done == 1)
-                                this.dataBase.SendQuery("SELECT Medicamente.Denumire, Boli.Nume AS 'Boala Tratata', Medicamente.ReactiiAdversePosibile " +
+                                this.dataBase.sendQuery("SELECT Medicamente.Denumire, Boli.Nume AS 'Boala Tratata', Medicamente.ReactiiAdversePosibile " +
                                         "FROM Medicamente INNER JOIN Boli ON Medicamente.BoalaID = Boli.BoalaID", false, false);
                             this.prev(Package.pkg);
                         }
@@ -616,7 +616,7 @@ public class InsertState implements PackageState, ActionListener {
                             );
 
                             if(done == 1)
-                                this.dataBase.SendQuery("SELECT Pacienti.Nume, Pacienti.Prenume, Pacienti.CNP, Pacienti.Strada, Pacienti.Numar, Pacienti.Oras, Pacienti.Judet, Pacienti.Sex, Pacienti.DataNasterii, CaseDeSanatate.Nume, Medicamente.Denumire\n" +
+                                this.dataBase.sendQuery("SELECT Pacienti.Nume, Pacienti.Prenume, Pacienti.CNP, Pacienti.Strada, Pacienti.Numar, Pacienti.Oras, Pacienti.Judet, Pacienti.Sex, Pacienti.DataNasterii, CaseDeSanatate.Nume, Medicamente.Denumire\n" +
                                         "FROM Pacienti INNER JOIN CaseDeSanatate ON Pacienti.CasaDeSanatateID = CaseDeSanatate.CasaDeSanatateID INNER JOIN Medicamente on Pacienti.MedicamentID = Medicamente.MedicamentID", false, false);
                             this.prev(Package.pkg);
                         }
@@ -629,7 +629,7 @@ public class InsertState implements PackageState, ActionListener {
                                 this.healthInsuranceHousesNameInput.getText() + "')");
 
                         if(done == 1)
-                            this.dataBase.SendQuery("SELECT * FROM CaseDeSanatate", false, false);
+                            this.dataBase.sendQuery("SELECT * FROM CaseDeSanatate", false, false);
                         this.prev(Package.pkg);
                     }
                     break;
@@ -640,7 +640,7 @@ public class InsertState implements PackageState, ActionListener {
                                 this.diseasesNameInput.getText() + "')");
 
                         if(done == 1)
-                            this.dataBase.SendQuery("SELECT * FROM Boli", false, false);
+                            this.dataBase.sendQuery("SELECT * FROM Boli", false, false);
                         this.prev(Package.pkg);
                     }
             }

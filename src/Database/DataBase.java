@@ -3,7 +3,6 @@ package Database;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.xml.transform.Result;
 import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
@@ -63,6 +62,17 @@ public class DataBase {
         }
     }
 
+    public int sendUpdate(String query){
+        int done;
+        try{
+            done = this.statement.executeUpdate(query);
+            return done;
+        }
+        catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
     public Statement getStatement(){
         return this.statement;
     }
@@ -102,6 +112,18 @@ public class DataBase {
                     while(resultSet.next())
                         numberOfDiseases = resultSet.getInt(1);
                     return numberOfDiseases;
+                }
+                catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            case "Doctors":
+                int numberOfDoctors = 0;
+                try{
+                    resultSet = this.statement.executeQuery("SELECT COUNT(DoctorID) FROM Doctori");
+
+                    while(resultSet.next())
+                        numberOfDoctors = resultSet.getInt(1);
+                    return numberOfDoctors;
                 }
                 catch (SQLException e) {
                     throw new RuntimeException(e);
@@ -155,11 +177,50 @@ public class DataBase {
                     throw new RuntimeException(e);
                 }
                 break;
+            case "Doctors":
+                try{
+                    resultSet = this.statement.executeQuery("SELECT * FROM Doctori");
+                    int i = 0;
+                    while (resultSet.next()) {
+                        String s1 = resultSet.getString(2);
+                        String s2 = resultSet.getString(3);
+                        objectsArray[i] = s1 + " " + s2;
+                        i++;
+                    }
+                }
+                catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
         }
-
     }
 
-    public void SendQuery(String query, boolean isAdditionalQuery, boolean isFirstAdditionalQuery){
+    public ResultSet getResultSetFromTable(String table, String name, String surname){
+        ResultSet resultSet;
+        switch (table){
+            case "Pills" -> {
+                try{
+                    resultSet = this.statement.executeQuery("SELECT * FROM Medicamente WHERE Denumire = '" + name + "'");
+                    return resultSet;
+                }
+                catch(SQLException e){
+                    throw new RuntimeException(e);
+                }
+            }
+            case "Doctors" -> {
+                try{
+                    resultSet = this.statement.executeQuery("SELECT * FROM Doctori WHERE Nume='" + name + "' AND Prenume='" + surname + "'");
+                    return resultSet;
+                }
+                catch(SQLException e){
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return null;
+    }
+
+    public void sendQuery(String query, boolean isAdditionalQuery, boolean isFirstAdditionalQuery){
         ResultSet resultSet;
         try {
             resultSet = this.statement.executeQuery(query);

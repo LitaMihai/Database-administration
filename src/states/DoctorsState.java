@@ -22,6 +22,8 @@ public class DoctorsState implements PackageState, ActionListener {
     final private JLabel title, query1Text, query2Text;
     final private JButton viewButton, updateButton, deleteButton, insertButton, backButton, query1Button, query2Button;
 
+    private int pressedButton;
+
     public DoctorsState(JFrame frame, DataBase dataBase){
         this.frame = frame;
         this.frame.getContentPane().removeAll();
@@ -41,6 +43,8 @@ public class DoctorsState implements PackageState, ActionListener {
         this.backButton = new JButton();
         this.query1Button = new JButton();
         this.query2Button = new JButton();
+
+        this.pressedButton = 0;
 
         InitVariables();
         AddToPanel();
@@ -154,11 +158,14 @@ public class DoctorsState implements PackageState, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == this.viewButton)
-            dataBase.SendQuery("SELECT * FROM Doctori", false, false);
+        if(e.getSource() == this.viewButton){
+            this.pressedButton = 0;
+            dataBase.sendQuery("SELECT * FROM Doctori", false, false);
+        }
+
 
         else if(e.getSource() == this.query1Button)
-            dataBase.SendQuery(
+            dataBase.sendQuery(
                       "SELECT Doctori.Nume, Doctori.Prenume, Doctori.Specializare, COUNT(PacientiDoctori.DoctorID) NrPacienti\n" +
                             "FROM Doctori INNER JOIN PacientiDoctori ON Doctori.DoctorID = PacientiDoctori.DoctorID\n" +
                             "GROUP BY Doctori.Nume, Doctori.Prenume, Doctori.Specializare\n" +
@@ -166,15 +173,27 @@ public class DoctorsState implements PackageState, ActionListener {
             );
 
         else if(e.getSource() == this.query2Button)
-            dataBase.SendQuery(
+            dataBase.sendQuery(
                       "SELECT Doctori.Nume, Doctori.Prenume, Doctori.Specializare\n" +
                             "FROM Doctori INNER JOIN PacientiDoctori ON Doctori.DoctorID = PacientiDoctori.DoctorID INNER JOIN Pacienti ON Pacienti.PacientID = PacientiDoctori.PacientID\n" +
                             "WHERE Pacienti.Sex = 'F'\n" +
                             "GROUP BY Doctori.Nume, Doctori.Prenume, Doctori.Specializare", true, false
             );
 
-        else if(e.getSource() == this.insertButton)
+        else if(e.getSource() == this.updateButton){
+            this.pressedButton = 1;
             this.next(Package.pkg);
+        }
+
+        else if(e.getSource() == this.deleteButton){
+            this.pressedButton = 2;
+            this.next(Package.pkg);
+        }
+
+        else if(e.getSource() == this.insertButton){
+            this.pressedButton = 3;
+            this.next(Package.pkg);
+        }
 
         else if(e.getSource() == this.backButton)
             this.prev(Package.pkg);
@@ -182,7 +201,11 @@ public class DoctorsState implements PackageState, ActionListener {
 
     @Override
     public void next(Package pkg) {
-        pkg.setState(new InsertState(this.frame, "Doctors", this.dataBase));
+        switch(pressedButton){
+            case 1 -> pkg.setState(new UpdateState(this.frame, "Doctors", this.dataBase));
+            case 2 -> pkg.setState(new DeleteState(this.frame, "Doctors", this.dataBase));
+            case 3 -> pkg.setState(new InsertState(this.frame, "Doctors", this.dataBase));
+        }
     }
 
     @Override

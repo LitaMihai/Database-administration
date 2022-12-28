@@ -138,11 +138,11 @@ public class PillsState implements PackageState, ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == this.viewButton)
-            dataBase.SendQuery("SELECT Medicamente.Denumire, Boli.Nume AS 'Boala Tratata',  Medicamente.ReactiiAdversePosibile " +
+            dataBase.sendQuery("SELECT Medicamente.Denumire, Boli.Nume AS 'Boala Tratata',  Medicamente.ReactiiAdversePosibile " +
                     "FROM Medicamente INNER JOIN Boli ON Medicamente.BoalaID = Boli.BoalaID", false, false);
 
         else if(e.getSource() == this.query1Button)
-            dataBase.SendQuery(
+            dataBase.sendQuery(
                     "SELECT Medicamente.Denumire, Medicamente.ReactiiAdversePosibile\n" +
                             "FROM Medicamente INNER JOIN Boli ON Medicamente.BoalaID = Boli.BoalaID\n" +
                             "WHERE Boli.Nume LIKE '%diabet%'", true, true
@@ -177,7 +177,7 @@ public class PillsState implements PackageState, ActionListener {
                 pkg.setState(new DeleteState(this.frame, "Pills", this.dataBase));
                 break;
             case 2:
-                //pkg.setState(new UpdateState(this.frame, "Pills", this.dataBase));
+                pkg.setState(new UpdateState(this.frame, "Pills", this.dataBase));
                 break;
         }
 
