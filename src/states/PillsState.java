@@ -20,8 +20,9 @@ public class PillsState implements PackageState, ActionListener {
     final private JLabel title, query1Text;
     final private JButton viewButton, updateButton, deleteButton, insertButton, backButton, query1Button;
     private int pressedButton;
+    private boolean isAdmin;
 
-    public PillsState(JFrame frame, DataBase dataBase){
+    public PillsState(JFrame frame, DataBase dataBase, boolean isAdmin){
         this.frame = frame;
         this.frame.getContentPane().removeAll();
         this.frame.repaint();
@@ -40,6 +41,8 @@ public class PillsState implements PackageState, ActionListener {
         this.query1Button = new JButton();
 
         this.pressedButton = 0;
+
+        this.isAdmin = isAdmin;
 
         InitVariables();
         AddToPanel();
@@ -80,6 +83,10 @@ public class PillsState implements PackageState, ActionListener {
         this.updateButton.setFocusable(false);
         this.updateButton.setForeground(this.textColor);
         this.updateButton.setBackground(this.inputColor);
+        if(this.isAdmin == false){
+            this.updateButton.setEnabled(false);
+            this.updateButton.setOpaque(false);
+        }
 
         this.deleteButton.setText("Delete");
         this.deleteButton.addActionListener(this);
@@ -87,6 +94,10 @@ public class PillsState implements PackageState, ActionListener {
         this.deleteButton.setFocusable(false);
         this.deleteButton.setForeground(this.textColor);
         this.deleteButton.setBackground(this.inputColor);
+        if(this.isAdmin == false){
+            this.deleteButton.setEnabled(false);
+            this.deleteButton.setOpaque(false);
+        }
 
         this.insertButton.setText("Insert");
         this.insertButton.addActionListener(this);
@@ -94,6 +105,10 @@ public class PillsState implements PackageState, ActionListener {
         this.insertButton.setFocusable(false);
         this.insertButton.setForeground(this.textColor);
         this.insertButton.setBackground(this.inputColor);
+        if(this.isAdmin == false){
+            this.insertButton.setEnabled(false);
+            this.insertButton.setOpaque(false);
+        }
 
         this.backButton.setText("Back");
         this.backButton.addActionListener(this);
@@ -171,13 +186,13 @@ public class PillsState implements PackageState, ActionListener {
     public void next(Package pkg) {
         switch(this.pressedButton){
             case 0:
-                pkg.setState(new InsertState(this.frame, "Pills", this.dataBase));
+                pkg.setState(new InsertState(this.frame, "Pills", this.dataBase, this.isAdmin));
                 break;
             case 1:
-                pkg.setState(new DeleteState(this.frame, "Pills", this.dataBase));
+                pkg.setState(new DeleteState(this.frame, "Pills", this.dataBase, this.isAdmin));
                 break;
             case 2:
-                pkg.setState(new UpdateState(this.frame, "Pills", this.dataBase));
+                pkg.setState(new UpdateState(this.frame, "Pills", this.dataBase, this.isAdmin));
                 break;
         }
 
@@ -185,7 +200,7 @@ public class PillsState implements PackageState, ActionListener {
 
     @Override
     public void prev(Package pkg) {
-        pkg.setState(new MenuState(this.frame));
+        pkg.setState(new MenuState(this.frame, this.isAdmin));
     }
 
     @Override

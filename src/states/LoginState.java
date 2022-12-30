@@ -19,6 +19,7 @@ public class LoginState implements ActionListener, KeyListener, PackageState {
     final private Color textColor = new Color(237, 242, 244);
     final private Color errorColor = new Color(200, 8, 21);
     final private Color inputColor = new Color(0, 150, 170);
+    private boolean isAdmin;
 
     public LoginState(JFrame frame){
         this.frame = frame;
@@ -34,6 +35,7 @@ public class LoginState implements ActionListener, KeyListener, PackageState {
         this.showPassword = new JCheckBox();
         this.submitButton =  new JButton();
         this.guestButton = new JButton();
+        this.isAdmin = false;
 
         InitVariables();
         AddToPanel();
@@ -53,6 +55,7 @@ public class LoginState implements ActionListener, KeyListener, PackageState {
 
         if(userValue.equals("sa") && passValue.equals("ed308")){
             // Next State
+            this.isAdmin = true;
             this.next(Package.pkg);
         }
         else{
@@ -159,6 +162,7 @@ public class LoginState implements ActionListener, KeyListener, PackageState {
 
         else if(ae.getSource() == this.guestButton){
             // Next State
+            this.isAdmin = false;
             this.next(Package.pkg);
         }
 
@@ -195,7 +199,7 @@ public class LoginState implements ActionListener, KeyListener, PackageState {
 
     @Override
     public void next(Package pkg) {
-        pkg.setState(new MenuState(this.frame));
+        pkg.setState(new MenuState(this.frame, this.isAdmin));
     }
 
     @Override

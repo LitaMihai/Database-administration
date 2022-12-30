@@ -25,6 +25,7 @@ public class InsertState implements PackageState, ActionListener {
     final private JButton sendButton, backButton;
     final private JLabel title;
     private boolean show;
+    private boolean isAdmin;
 
     // Doctors
     final private JLabel doctorsNameLabel, doctorsSurnameLabel, doctorsSpecialityLabel;
@@ -61,7 +62,7 @@ public class InsertState implements PackageState, ActionListener {
     final private JLabel healthInsuranceHousesNameLabel;
     final private JTextField healthInsuranceHousesNameInput;
 
-    public InsertState(JFrame frame, String sqlTable, DataBase dataBase){
+    public InsertState(JFrame frame, String sqlTable, DataBase dataBase, boolean isAdmin){
         this.frame = frame;
         this.sqlTable = sqlTable;
         this.dataBase = dataBase;
@@ -76,6 +77,8 @@ public class InsertState implements PackageState, ActionListener {
         this.title = new JLabel();
 
         this.show = false;
+
+        this.isAdmin = isAdmin;
 
         // Doctors
         this.doctorsNameLabel = new JLabel();
@@ -512,34 +515,28 @@ public class InsertState implements PackageState, ActionListener {
         }
     }
 
-    private boolean areEmptyDoctorsButtons(){
-        return !this.doctorsNameInput.getText().equals("")
-                && !this.doctorsSurnameInput.getText().equals("")
-                && !this.doctorsSpecialityInput.getText().equals("");
-    }
+    private boolean areEmptyButtons(String table){
+        switch(table){
+            case "Doctors": return this.doctorsNameInput.getText().equals("")
+                    && this.doctorsSurnameInput.getText().equals("")
+                    && this.doctorsSpecialityInput.getText().equals("");
 
-    private boolean areEmptyPillsButtons(){
-        return !this.pillsNameInput.getText().equals("")
-                && !this.pillsSideEffectsInput.getText().equals("");
-    }
+            case "Pills": return this.pillsNameInput.getText().equals("")
+                    && this.pillsSideEffectsInput.getText().equals("");
 
-    private boolean areEmptyPatientsButtons(){
-        return !this.patientNameInput.getText().equals("")
-                && !this.patientSurnameInput.getText().equals("")
-                && !this.patientPersonalIdentificationNumberInput.getText().equals("")
-                && !this.patientStreetInput.getText().equals("")
-                && !this.patientCityInput.getText().equals("")
-                && !this.patientCountyInput.getText().equals("")
-                && !this.patientBirthDateInput.getText().equals("")
-                && !this.patientStreetNumberInput.getText().equals("");
-    }
+            case "Patients": return this.patientNameInput.getText().equals("")
+                    && this.patientSurnameInput.getText().equals("")
+                    && this.patientPersonalIdentificationNumberInput.getText().equals("")
+                    && this.patientStreetInput.getText().equals("")
+                    && this.patientCityInput.getText().equals("")
+                    && this.patientCountyInput.getText().equals("")
+                    && this.patientBirthDateInput.getText().equals("")
+                    && this.patientStreetNumberInput.getText().equals("");
+            case "Diseases": return this.diseasesNameInput.getText().equals("");
 
-    private boolean areEmptyDiseasesButtons(){
-        return !this.diseasesNameInput.getText().equals("");
-    }
-
-    private boolean areEmptyHealthInsuranceHousesButtons(){
-        return !this.healthInsuranceHousesNameInput.getText().equals("");
+            case "HealthInsuranceHouses": return this.healthInsuranceHousesNameInput.getText().equals("");
+        }
+        return true;
     }
 
     @Override
@@ -547,7 +544,7 @@ public class InsertState implements PackageState, ActionListener {
         if(e.getSource() == this.sendButton){
             switch (this.sqlTable){
                 case "Doctors":
-                    if(areEmptyDoctorsButtons()){
+                    if(!areEmptyButtons("Doctors")){
                         int done = this.dataBase.sendInsert("INSERT INTO Doctori VALUES('" +
                                 this.doctorsNameInput.getText() + "', '" +
                                 this.doctorsSurnameInput.getText() + "', '" +
@@ -560,7 +557,7 @@ public class InsertState implements PackageState, ActionListener {
                     break;
 
                 case "Pills":
-                    if(areEmptyPillsButtons()){
+                    if(!areEmptyButtons("Pills")){
                         int s1 = -1;
                         ResultSet resultSet;
                         try {
@@ -585,7 +582,7 @@ public class InsertState implements PackageState, ActionListener {
                     break;
 
                 case "Patients":
-                    if(areEmptyPatientsButtons()){
+                    if(!areEmptyButtons("Patients")){
                         int s1 = -1, s2 = -1;
                         ResultSet resultSet;
                         try {
@@ -624,7 +621,7 @@ public class InsertState implements PackageState, ActionListener {
                     break;
 
                 case "HealthInsuranceHouses":
-                    if(areEmptyHealthInsuranceHousesButtons()){
+                    if(!areEmptyButtons("HealthInsuranceHouses")){
                         int done = this.dataBase.sendInsert("INSERT INTO CaseDeSanatate VALUES('" +
                                 this.healthInsuranceHousesNameInput.getText() + "')");
 
@@ -635,7 +632,7 @@ public class InsertState implements PackageState, ActionListener {
                     break;
 
                 case "Diseases":
-                    if(areEmptyDiseasesButtons()){
+                    if(!areEmptyButtons("Diseases")){
                         int done = this.dataBase.sendInsert("INSERT INTO Boli VALUES('" +
                                 this.diseasesNameInput.getText() + "')");
 
@@ -664,11 +661,11 @@ public class InsertState implements PackageState, ActionListener {
     @Override
     public void prev(Package pkg) {
         switch (this.sqlTable) {
-            case "Doctors" -> pkg.setState(new DoctorsState(this.frame, this.dataBase));
-            case "Pills" -> pkg.setState(new PillsState(this.frame, this.dataBase));
-            case "Patients" -> pkg.setState(new PatientsState(this.frame, this.dataBase));
-            case "HealthInsuranceHouses" -> pkg.setState(new HealthInsuranceHousesState(this.frame, this.dataBase));
-            case "Diseases" -> pkg.setState(new DiseasesState(this.frame, this.dataBase));
+            case "Doctors" -> pkg.setState(new DoctorsState(this.frame, this.dataBase, this.isAdmin));
+            case "Pills" -> pkg.setState(new PillsState(this.frame, this.dataBase, this.isAdmin));
+            case "Patients" -> pkg.setState(new PatientsState(this.frame, this.dataBase, this.isAdmin));
+            case "HealthInsuranceHouses" -> pkg.setState(new HealthInsuranceHousesState(this.frame, this.dataBase, this.isAdmin));
+            case "Diseases" -> pkg.setState(new DiseasesState(this.frame, this.dataBase, this.isAdmin));
         }
     }
 

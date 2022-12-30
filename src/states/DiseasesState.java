@@ -20,8 +20,9 @@ public class DiseasesState implements PackageState, ActionListener {
     final private JLabel title, query1Text;
     final private JButton viewButton, deleteButton, insertButton, backButton, query1Button;
     private boolean buttonPressed;
+    private boolean isAdmin;
 
-    public DiseasesState(JFrame frame, DataBase dataBase) {
+    public DiseasesState(JFrame frame, DataBase dataBase, boolean isAdmin) {
         this.frame = frame;
         this.frame.getContentPane().removeAll();
         this.frame.repaint();
@@ -37,6 +38,8 @@ public class DiseasesState implements PackageState, ActionListener {
         this.insertButton = new JButton();
         this.backButton = new JButton();
         this.query1Button = new JButton();
+
+        this.isAdmin = isAdmin;
 
         InitVariables();
         AddToPanel();
@@ -77,6 +80,10 @@ public class DiseasesState implements PackageState, ActionListener {
         this.deleteButton.setFocusable(false);
         this.deleteButton.setForeground(this.textColor);
         this.deleteButton.setBackground(this.inputColor);
+        if(this.isAdmin == false){
+            this.deleteButton.setEnabled(false);
+            this.deleteButton.setOpaque(false);
+        }
 
         this.insertButton.setText("Insert");
         this.insertButton.addActionListener(this);
@@ -84,6 +91,10 @@ public class DiseasesState implements PackageState, ActionListener {
         this.insertButton.setFocusable(false);
         this.insertButton.setForeground(this.textColor);
         this.insertButton.setBackground(this.inputColor);
+        if(this.isAdmin == false){
+            this.insertButton.setEnabled(false);
+            this.insertButton.setOpaque(false);
+        }
 
         this.backButton.setText("Back");
         this.backButton.addActionListener(this);
@@ -154,15 +165,15 @@ public class DiseasesState implements PackageState, ActionListener {
     @Override
     public void next(Package pkg) {
         if(this.buttonPressed == true)
-            pkg.setState(new InsertState(this.frame, "Diseases", this.dataBase));
+            pkg.setState(new InsertState(this.frame, "Diseases", this.dataBase, this.isAdmin));
 
         else if(this.buttonPressed == false)
-            pkg.setState(new DeleteState(this.frame, "Diseases", this.dataBase));
+            pkg.setState(new DeleteState(this.frame, "Diseases", this.dataBase, this.isAdmin));
     }
 
     @Override
     public void prev(Package pkg) {
-        pkg.setState(new MenuState(this.frame));
+        pkg.setState(new MenuState(this.frame, this.isAdmin));
     }
 
     @Override

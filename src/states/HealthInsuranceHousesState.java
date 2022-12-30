@@ -20,8 +20,9 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
     final private JLabel title, query1Text;
     final private JButton viewButton, deleteButton, insertButton, backButton, query1Button;
     private int buttonPressed;
+    private boolean isAdmin;
 
-    public HealthInsuranceHousesState(JFrame frame, DataBase dataBase){
+    public HealthInsuranceHousesState(JFrame frame, DataBase dataBase, boolean isAdmin){
         this.frame = frame;
         this.frame.getContentPane().removeAll();
         this.frame.repaint();
@@ -39,6 +40,8 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
         this.query1Button = new JButton();
 
         this.buttonPressed = 0;
+
+        this.isAdmin = isAdmin;
 
         InitVariables();
         AddToPanel();
@@ -79,6 +82,10 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
         this.deleteButton.setFocusable(false);
         this.deleteButton.setForeground(this.textColor);
         this.deleteButton.setBackground(this.inputColor);
+        if(this.isAdmin == false){
+            this.deleteButton.setEnabled(false);
+            this.deleteButton.setOpaque(false);
+        }
 
         this.insertButton.setText("Insert");
         this.insertButton.addActionListener(this);
@@ -86,6 +93,10 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
         this.insertButton.setFocusable(false);
         this.insertButton.setForeground(this.textColor);
         this.insertButton.setBackground(this.inputColor);
+        if(this.isAdmin == false){
+            this.insertButton.setEnabled(false);
+            this.insertButton.setOpaque(false);
+        }
 
         this.backButton.setText("Back");
         this.backButton.addActionListener(this);
@@ -156,17 +167,17 @@ public class HealthInsuranceHousesState implements PackageState, ActionListener 
     public void next(Package pkg) {
         switch (this.buttonPressed){
             case 0:
-                pkg.setState(new InsertState(this.frame, "HealthInsuranceHouses", this.dataBase));
+                pkg.setState(new InsertState(this.frame, "HealthInsuranceHouses", this.dataBase, this.isAdmin));
                 break;
             case 1:
-                pkg.setState(new DeleteState(this.frame, "HealthInsuranceHouses", this.dataBase));
+                pkg.setState(new DeleteState(this.frame, "HealthInsuranceHouses", this.dataBase, this.isAdmin));
                 break;
         }
     }
 
     @Override
     public void prev(Package pkg) {
-        pkg.setState(new MenuState(this.frame));
+        pkg.setState(new MenuState(this.frame, this.isAdmin));
     }
 
     @Override

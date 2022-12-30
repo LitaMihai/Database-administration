@@ -20,8 +20,9 @@ public class PatientsState implements PackageState, ActionListener {
     final private DataBase dataBase;
     final private JLabel title, query1Text, query2Text;
     final private JButton viewButton, updateButton, deleteButton, insertButton, backButton, query1Button, query2Button;
+    private boolean isAdmin;
 
-    public PatientsState(JFrame frame, DataBase dataBase) {
+    public PatientsState(JFrame frame, DataBase dataBase, boolean isAdmin) {
         this.frame = frame;
         this.frame.getContentPane().removeAll();
         this.frame.repaint();
@@ -40,6 +41,8 @@ public class PatientsState implements PackageState, ActionListener {
         this.backButton = new JButton();
         this.query1Button = new JButton();
         this.query2Button = new JButton();
+
+        this.isAdmin = isAdmin;
 
         InitVariables();
         AddToPanel();
@@ -85,6 +88,10 @@ public class PatientsState implements PackageState, ActionListener {
         this.updateButton.setFocusable(false);
         this.updateButton.setForeground(this.textColor);
         this.updateButton.setBackground(this.inputColor);
+        if(this.isAdmin == false){
+            this.updateButton.setEnabled(false);
+            this.updateButton.setOpaque(false);
+        }
 
         this.deleteButton.setText("Delete");
         this.deleteButton.addActionListener(this);
@@ -92,6 +99,10 @@ public class PatientsState implements PackageState, ActionListener {
         this.deleteButton.setFocusable(false);
         this.deleteButton.setForeground(this.textColor);
         this.deleteButton.setBackground(this.inputColor);
+        if(this.isAdmin == false){
+            this.deleteButton.setEnabled(false);
+            this.deleteButton.setOpaque(false);
+        }
 
         this.insertButton.setText("Insert");
         this.insertButton.addActionListener(this);
@@ -99,6 +110,10 @@ public class PatientsState implements PackageState, ActionListener {
         this.insertButton.setFocusable(false);
         this.insertButton.setForeground(this.textColor);
         this.insertButton.setBackground(this.inputColor);
+        if(this.isAdmin == false){
+            this.insertButton.setEnabled(false);
+            this.insertButton.setOpaque(false);
+        }
 
         this.backButton.setText("Back");
         this.backButton.addActionListener(this);
@@ -181,12 +196,12 @@ public class PatientsState implements PackageState, ActionListener {
 
     @Override
     public void next(Package pkg) {
-        pkg.setState(new InsertState(this.frame, "Patients", this.dataBase));
+        pkg.setState(new InsertState(this.frame, "Patients", this.dataBase, this.isAdmin));
     }
 
     @Override
     public void prev(Package pkg) {
-        pkg.setState(new MenuState(this.frame));
+        pkg.setState(new MenuState(this.frame, this.isAdmin));
     }
 
     @Override

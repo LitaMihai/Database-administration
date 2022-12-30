@@ -25,10 +25,11 @@ public class MenuState implements PackageState, ActionListener {
     final private JButton diseasesButton;
     final private JButton logoutButton;
     final private JFrame frame;
+    private boolean isAdmin;
 
     private int nextStateNumber;
 
-    public MenuState(JFrame frame){
+    public MenuState(JFrame frame, boolean isAdmin){
         try{
             dataBase = new DataBase();
         }
@@ -50,6 +51,8 @@ public class MenuState implements PackageState, ActionListener {
         this.logoutButton = new JButton();
 
         this.nextStateNumber = -1;
+
+        this.isAdmin = isAdmin;
 
         InitVariables();
         AddToPanel();
@@ -166,19 +169,19 @@ public class MenuState implements PackageState, ActionListener {
     public void next(Package pkg) {
         switch(this.nextStateNumber){
             case 0:
-                pkg.setState(new DoctorsState(this.frame, this.dataBase));
+                pkg.setState(new DoctorsState(this.frame, this.dataBase, this.isAdmin));
                 break;
             case 1:
-                pkg.setState(new PillsState(this.frame, this.dataBase));
+                pkg.setState(new PillsState(this.frame, this.dataBase, this.isAdmin));
                 break;
             case 2:
-                pkg.setState(new PatientsState(this.frame, this.dataBase));
+                pkg.setState(new PatientsState(this.frame, this.dataBase, this.isAdmin));
                 break;
             case 3:
-                pkg.setState(new HealthInsuranceHousesState(this.frame, this.dataBase));
+                pkg.setState(new HealthInsuranceHousesState(this.frame, this.dataBase, this.isAdmin));
                 break;
             case 4:
-                pkg.setState(new DiseasesState(this.frame, this.dataBase));
+                pkg.setState(new DiseasesState(this.frame, this.dataBase, this.isAdmin));
                 break;
         }
     }

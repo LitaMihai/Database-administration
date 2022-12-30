@@ -22,6 +22,8 @@ public class DeleteState implements PackageState, ActionListener {
     final private JButton sendButton, backButton;
     final private JLabel title;
 
+    private boolean isAdmin;
+
     // Doctors
 
     // Pills
@@ -41,7 +43,7 @@ public class DeleteState implements PackageState, ActionListener {
     final private JComboBox<String> healthInsuranceHousesDropdownList;
     final private JLabel healthInsuranceHousesNameLabel;
 
-    DeleteState(JFrame frame, String sqlTable, DataBase dataBase){
+    DeleteState(JFrame frame, String sqlTable, DataBase dataBase, boolean isAdmin){
         this.frame = frame;
         this.sqlTable = sqlTable;
         this.dataBase = dataBase;
@@ -54,6 +56,8 @@ public class DeleteState implements PackageState, ActionListener {
         this.frame.setTitle(sqlTable);
 
         this.title = new JLabel();
+
+        this.isAdmin = isAdmin;
 
         // Doctors
 
@@ -266,11 +270,11 @@ public class DeleteState implements PackageState, ActionListener {
     @Override
     public void prev(Package pkg) {
         switch (this.sqlTable) {
-            case "Doctors" -> pkg.setState(new DoctorsState(this.frame, this.dataBase));
-            case "Pills" -> pkg.setState(new PillsState(this.frame, this.dataBase));
-            case "Patients" -> pkg.setState(new PatientsState(this.frame, this.dataBase));
-            case "HealthInsuranceHouses" -> pkg.setState(new HealthInsuranceHousesState(this.frame, this.dataBase));
-            case "Diseases" -> pkg.setState(new DiseasesState(this.frame, this.dataBase));
+            case "Doctors" -> pkg.setState(new DoctorsState(this.frame, this.dataBase, this.isAdmin));
+            case "Pills" -> pkg.setState(new PillsState(this.frame, this.dataBase, this.isAdmin));
+            case "Patients" -> pkg.setState(new PatientsState(this.frame, this.dataBase, this.isAdmin));
+            case "HealthInsuranceHouses" -> pkg.setState(new HealthInsuranceHousesState(this.frame, this.dataBase, this.isAdmin));
+            case "Diseases" -> pkg.setState(new DiseasesState(this.frame, this.dataBase, this.isAdmin));
         }
     }
 

@@ -23,6 +23,8 @@ public class UpdateState implements PackageState, ActionListener {
     final private JButton sendButton, backButton;
     final private JLabel title;
 
+    private boolean isAdmin;
+
     // Doctors
     final private JLabel doctorNameLabel, doctorSpecialityLabel;
     final private JComboBox<String> doctorsDropdownList;
@@ -36,7 +38,7 @@ public class UpdateState implements PackageState, ActionListener {
     final private JComboBox<String>  pillsDropdownList;
     private String doctorNameAuxiliaryVariable, doctorSurnameAuxiliaryVariable;
 
-    UpdateState(JFrame frame, String sqlTable, DataBase dataBase){
+    UpdateState(JFrame frame, String sqlTable, DataBase dataBase, boolean isAdmin){
         this.frame = frame;
         this.sqlTable = sqlTable;
         this.dataBase = dataBase;
@@ -48,6 +50,8 @@ public class UpdateState implements PackageState, ActionListener {
         this.frame.repaint();
 
         this.title = new JLabel();
+
+        this.isAdmin = isAdmin;
 
         // Doctors
         int numberOfDoctors = this.dataBase.getNumberOf("Doctors");
@@ -335,11 +339,11 @@ public class UpdateState implements PackageState, ActionListener {
     @Override
     public void prev(Package pkg) {
         switch (this.sqlTable) {
-            case "Doctors" -> pkg.setState(new DoctorsState(this.frame, this.dataBase));
-            case "Pills" -> pkg.setState(new PillsState(this.frame, this.dataBase));
-            case "Patients" -> pkg.setState(new PatientsState(this.frame, this.dataBase));
-            case "HealthInsuranceHouses" -> pkg.setState(new HealthInsuranceHousesState(this.frame, this.dataBase));
-            case "Diseases" -> pkg.setState(new DiseasesState(this.frame, this.dataBase));
+            case "Doctors" -> pkg.setState(new DoctorsState(this.frame, this.dataBase, this.isAdmin));
+            case "Pills" -> pkg.setState(new PillsState(this.frame, this.dataBase, this.isAdmin));
+            case "Patients" -> pkg.setState(new PatientsState(this.frame, this.dataBase, this.isAdmin));
+            case "HealthInsuranceHouses" -> pkg.setState(new HealthInsuranceHousesState(this.frame, this.dataBase, this.isAdmin));
+            case "Diseases" -> pkg.setState(new DiseasesState(this.frame, this.dataBase, this.isAdmin));
         }
     }
 
