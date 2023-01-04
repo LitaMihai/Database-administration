@@ -168,7 +168,6 @@ public class MenuState implements PackageState, ActionListener {
             this.prev(Package.pkg);
         }
         else if(e.getSource() == this.queryButton){
-            //EXECUTE QUERY
             dataBase.sendQuery("  SELECT Pacienti.Nume AS NumePacient, Pacienti.Prenume AS PrenumePacient, Doctori.Nume AS NumeDoctor, Doctori.Prenume AS PrenumeDoctor, PacientiDoctori.Data_Incepere, PacientiDoctori.Data_Final\n" +
                     "  FROM PacientiDoctori INNER JOIN Pacienti ON Pacienti.PacientID = PacientiDoctori.PacientID INNER JOIN Doctori ON PacientiDoctori.DoctorID = Doctori.DoctorID\n" +
                     "  WHERE PacientiDoctori.Data_Final >= (SELECT CAST( GETDATE() AS Date ))", false, false);

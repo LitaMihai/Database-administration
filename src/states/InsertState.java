@@ -105,9 +105,9 @@ public class InsertState implements PackageState, ActionListener {
         this.testedPillsOptions = new String[numberOfPills];
         this.dataBase.getObjects("Pills", this.testedPillsOptions);
 
-        int numberOfHealthInsuranceHouses = this.dataBase.getNumberOf("Health Insurance Houses");
+        int numberOfHealthInsuranceHouses = this.dataBase.getNumberOf("HealthInsuranceHouses");
         this.healthInsuranceHouseOptions = new String[numberOfHealthInsuranceHouses];
-        this.dataBase.getObjects("Health Insurance Houses", this.healthInsuranceHouseOptions);
+        this.dataBase.getObjects("HealthInsuranceHouses", this.healthInsuranceHouseOptions);
 
         this.patientNameLabel = new JLabel();
         this.patientSurnameLabel = new JLabel();
@@ -354,9 +354,22 @@ public class InsertState implements PackageState, ActionListener {
 
         this.calendar.setVisible(false);
         this.calendar.getDayChooser().addPropertyChangeListener("day", e ->{
+            int monthInt = this.calendar.getMonthChooser().getMonth() + 1;
+            int dayInt = this.calendar.getDayChooser().getDay();
+            String month = "";
+            String day = "";
+
+            if(monthInt < 10)
+                month = "0" + Integer.toString(monthInt);
+            else
+                month = Integer.toString(monthInt);
+
+            if(dayInt < 10)
+                day = "0" + Integer.toString(dayInt);
+            else
+                day =  Integer.toString(dayInt);
+
             String year = Integer.toString(this.calendar.getYearChooser().getYear());
-            String month = Integer.toString(this.calendar.getMonthChooser().getMonth() + 1);
-            String day = Integer.toString(this.calendar.getDayChooser().getDay());
 
             this.patientBirthDateInput.setText(
                 year + "." +
@@ -598,9 +611,10 @@ public class InsertState implements PackageState, ActionListener {
                             throw new RuntimeException(ex);
                         }
                         if((s1 != -1) && (s2 != -1)){
+                            System.out.println(this.patientBirthDateSQL);
                             int done = this.dataBase.sendInsert("INSERT INTO Pacienti VALUES(" +
-                                    Integer.toString(s1) + ", " +
-                                    Integer.toString(s2) + ", '" +
+                                    s1 + ", " +
+                                    s2 + ", '" +
                                     this.patientNameInput.getText() + "', '" +
                                     this.patientSurnameInput.getText() + "', '" +
                                     this.patientPersonalIdentificationNumberInput.getText() + "', '" +
@@ -611,8 +625,12 @@ public class InsertState implements PackageState, ActionListener {
                                     this.sexDropdownList.getItemAt(this.sexDropdownList.getSelectedIndex()).toString() + "', '" +
                                     this.patientBirthDateSQL + "');"
                             );
-
-                            if(done == 1)
+                            int done1 = this.dataBase.sendInsert("DECLARE @max_value AS INT=(SELECT COUNT(DoctorID) FROM Doctori);\n" +
+                                    "DECLARE @current_date AS date=(SELECT CAST( GETDATE() AS Date));\n" +
+                                    "DECLARE @final_date AS date = DATEADD(yyyy, 4, @current_date);\n" +
+                                    "\n" +
+                                    "INSERT INTO PacientiDoctori Values((SELECT MAX(PacientID) FROM Pacienti), (SELECT RAND()*@max_value), @current_date, @final_date);\n");
+                            if(done == 1 && done1 == 1)
                                 this.dataBase.sendQuery("SELECT Pacienti.Nume, Pacienti.Prenume, Pacienti.CNP, Pacienti.Strada, Pacienti.Numar, Pacienti.Oras, Pacienti.Judet, Pacienti.Sex, Pacienti.DataNasterii, CaseDeSanatate.Nume, Medicamente.Denumire\n" +
                                         "FROM Pacienti INNER JOIN CaseDeSanatate ON Pacienti.CasaDeSanatateID = CaseDeSanatate.CasaDeSanatateID INNER JOIN Medicamente on Pacienti.MedicamentID = Medicamente.MedicamentID", false, false);
                             this.prev(Package.pkg);
