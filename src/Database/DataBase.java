@@ -253,6 +253,26 @@ public class DataBase {
             tabela = getTableNameFromQuery(query);
             if(!isAdditionalQuery){
                 switch (tabela) {
+                    case "PacientiDoctori " -> {
+                        model.addColumn("NumePacient");
+                        model.addColumn("PrenumePacient");
+                        model.addColumn("NumeDoctor");
+                        model.addColumn("PrenumeDoctor");
+                        model.addColumn("Data Incepere");
+                        model.addColumn("Data Final");
+                        while (resultSet.next()){
+                            String s1 = resultSet.getString(1);
+                            String s2 = resultSet.getString(2);
+                            String s3 = resultSet.getString(3);
+                            String s4 = resultSet.getString(4);
+                            String s5 = resultSet.getString(5);
+                            String s6 = resultSet.getString(6);
+
+                            model.addRow(new Object[]{s1, s2, s3, s4, s5, s6});
+                        }
+                        for(int i = 0; i < 3; i++)
+                            table.getColumnModel().getColumn(i).setCellRenderer( centerRenderer );
+                    }
                     case "Doctori" -> {
                         model.addColumn("Nume");
                         model.addColumn("Prenume");
@@ -324,10 +344,30 @@ public class DataBase {
                         table.getColumnModel().getColumn(0).setCellRenderer( centerRenderer );
                     }
 
+                    case "CaseDeSanatate " -> { // Additional Query 2
+                        model.addColumn("Nume");
+                        while (resultSet.next()) {
+                            String s1 = resultSet.getString(1);
+
+                            model.addRow(new Object[]{s1});
+                        }
+                        table.getColumnModel().getColumn(0).setCellRenderer( centerRenderer );
+                    }
+
                     case "Boli" -> {
                         model.addColumn("Nume");
                         while (resultSet.next()) {
                             String s1 = resultSet.getString(2);
+
+                            model.addRow(new Object[]{s1});
+                        }
+                        table.getColumnModel().getColumn(0).setCellRenderer( centerRenderer );
+                    }
+
+                    case "Boli " -> { // Additional Query 2
+                        model.addColumn("Nume");
+                        while (resultSet.next()) {
+                            String s1 = resultSet.getString(1);
 
                             model.addRow(new Object[]{s1});
                         }

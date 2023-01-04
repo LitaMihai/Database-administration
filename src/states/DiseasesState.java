@@ -17,8 +17,8 @@ public class DiseasesState implements PackageState, ActionListener {
     final private Color inputColor = new Color(0, 150, 170);
     final private JFrame frame;
     final private DataBase dataBase;
-    final private JLabel title, query1Text;
-    final private JButton viewButton, deleteButton, insertButton, backButton, query1Button;
+    final private JLabel title, query1Text, query2Text;
+    final private JButton viewButton, deleteButton, insertButton, backButton, query1Button, query2Button;
     private boolean buttonPressed;
     private boolean isAdmin;
 
@@ -32,12 +32,14 @@ public class DiseasesState implements PackageState, ActionListener {
 
         this.title = new JLabel();
         this.query1Text = new JLabel();
+        this.query2Text = new JLabel();
 
         this.viewButton = new JButton();
         this.deleteButton = new JButton();
         this.insertButton = new JButton();
         this.backButton = new JButton();
         this.query1Button = new JButton();
+        this.query2Button = new JButton();
 
         this.isAdmin = isAdmin;
 
@@ -66,6 +68,11 @@ public class DiseasesState implements PackageState, ActionListener {
         this.query1Text.setFont(new Font("Poppins Medium", Font.BOLD, 20));
         this.query1Text.setForeground(this.textColor);
         this.query1Text.setHorizontalAlignment(SwingConstants.CENTER);
+
+        this.query2Text.setText("<html><center>" + "Bolile care au infectat pacienti din Bucuresti" + "</center></html>");
+        this.query2Text.setFont(new Font("Poppins Medium", Font.BOLD, 20));
+        this.query2Text.setForeground(this.textColor);
+        this.query2Text.setHorizontalAlignment(SwingConstants.CENTER);
 
         this.viewButton.setText("View");
         this.viewButton.addActionListener(this);
@@ -109,6 +116,13 @@ public class DiseasesState implements PackageState, ActionListener {
         this.query1Button.setFocusable(false);
         this.query1Button.setForeground(this.textColor);
         this.query1Button.setBackground(this.inputColor);
+
+        this.query2Button.setText("Execute");
+        this.query2Button.addActionListener(this);
+        this.query2Button.setFont(new Font("Poppins Medium", Font.BOLD, 20));
+        this.query2Button.setFocusable(false);
+        this.query2Button.setForeground(this.textColor);
+        this.query2Button.setBackground(this.inputColor);
     }
 
     private void RepositionGUI(){
@@ -120,8 +134,10 @@ public class DiseasesState implements PackageState, ActionListener {
         this.deleteButton.setBounds(this.viewButton.getX(), this.viewButton.getY() + 57, 170, 30);
         this.insertButton.setBounds(this.deleteButton.getX(), this.deleteButton.getY() + 57, 170, 30);
         this.backButton.setBounds(this.title.getX() + 500, this.title.getY() - 110, 170, 30);
-        this.query1Text.setBounds(this.viewButton.getX() + 300, this.viewButton.getY(), 313, 60);
+        this.query1Text.setBounds(this.viewButton.getX() + 300, this.viewButton.getY() - 50, 313, 60);
         this.query1Button.setBounds(this.query1Text.getX() + (313/2) - (170/2), this.query1Text.getY() + 80, 170, 30);
+        this.query2Text.setBounds(this.query1Text.getX(), this.query1Text.getY() + 170, 313, 60);
+        this.query2Button.setBounds(this.query2Text.getX() + (313/2) - (170/2), this.query2Text.getY() + 80, 170, 30);
     }
 
     private void AddToPanel(){
@@ -132,6 +148,8 @@ public class DiseasesState implements PackageState, ActionListener {
         this.frame.add(this.backButton);
         this.frame.add(this.query1Text);
         this.frame.add(this.query1Button);
+        this.frame.add(this.query2Text);
+        this.frame.add(this.query2Button);
     }
 
     @Override
@@ -147,6 +165,14 @@ public class DiseasesState implements PackageState, ActionListener {
                     "HAVING COUNT(Pacienti.MedicamentID) >= 3",
                     true, true
             );
+
+        else if(e.getSource() == this.query2Button)
+            dataBase.sendQuery(" SELECT DISTINCT Boli.Nume\n" +
+                    " FROM Boli INNER JOIN Medicamente ON Boli.BoalaId = Medicamente.BoalaID INNER JOIN (\n" +
+                    "\tSELECT Pacienti.MedicamentID\n" +
+                    "\tFROM Pacienti INNER JOIN Medicamente ON Pacienti.MedicamentID = Medicamente.MedicamentID\n" +
+                    "\tWHERE Pacienti.Oras = 'Bucuresti'\n" +
+                    " ) AS AD ON Medicamente.MedicamentID = AD.MedicamentID", false, false);
 
         else if(e.getSource() == this.deleteButton){
             this.buttonPressed = false;

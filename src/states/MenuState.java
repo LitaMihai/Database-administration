@@ -18,15 +18,9 @@ public class MenuState implements PackageState, ActionListener {
 
     private DataBase dataBase;
     final private JLabel title;
-    final private JButton doctorsButton;
-    final private JButton pillsButton;
-    final private JButton patientButton;
-    final private JButton healthInsuranceHousesButton;
-    final private JButton diseasesButton;
-    final private JButton logoutButton;
+    final private JButton doctorsButton, pillsButton, patientButton, healthInsuranceHousesButton, diseasesButton, logoutButton, queryButton;
     final private JFrame frame;
     private boolean isAdmin;
-
     private int nextStateNumber;
 
     public MenuState(JFrame frame, boolean isAdmin){
@@ -49,6 +43,7 @@ public class MenuState implements PackageState, ActionListener {
         this.healthInsuranceHousesButton = new JButton();
         this.diseasesButton = new JButton();
         this.logoutButton = new JButton();
+        this.queryButton = new JButton();
 
         this.nextStateNumber = -1;
 
@@ -116,16 +111,24 @@ public class MenuState implements PackageState, ActionListener {
         this.logoutButton.setFocusable(false);
         this.logoutButton.setForeground(this.textColor);
         this.logoutButton.setBackground(this.inputColor);
+
+        this.queryButton.setText("Testele de azi");
+        this.queryButton.addActionListener(this);
+        this.queryButton.setFont(new Font("Poppins Medium", Font.BOLD, 20));
+        this.queryButton.setFocusable(false);
+        this.queryButton.setForeground(this.textColor);
+        this.queryButton.setBackground(this.inputColor);
     }
 
     private void RepositionGUI(){
-        this.title.setBounds(this.frame.getWidth() / 2 - (243 / 2), this.frame.getHeight() / 2 - (90 + 68), 243, 30);
+        this.title.setBounds(this.frame.getWidth() / 2 - (243 / 2), this.frame.getHeight() / 2 - (90 + 108), 243, 30);
         this.doctorsButton.setBounds(this.title.getX() + 35, this.title.getY() + 77, 170, 30);
         this.pillsButton.setBounds(this.doctorsButton.getX(), this.doctorsButton.getY() + 57, 170, 30);
         this.patientButton.setBounds(this.pillsButton.getX(), this.pillsButton.getY() + 57, 170, 30);
         this.healthInsuranceHousesButton.setBounds(this.patientButton.getX(), this.patientButton.getY() + 57, 170, 30);
         this.diseasesButton.setBounds(this.healthInsuranceHousesButton.getX(), this.healthInsuranceHousesButton.getY() + 57, 170, 30);
         this.logoutButton.setBounds(this.title.getX() + 273, this.title.getY() - 100, 170, 30);
+        this.queryButton.setBounds(this.title.getX() - 203, this.title.getY() - 100, 170, 30);
     }
 
     private void AddToPanel(){
@@ -136,6 +139,7 @@ public class MenuState implements PackageState, ActionListener {
         this.frame.add(this.healthInsuranceHousesButton);
         this.frame.add(this.diseasesButton);
         this.frame.add(this.logoutButton);
+        this.frame.add(this.queryButton);
     }
 
     @Override
@@ -162,6 +166,12 @@ public class MenuState implements PackageState, ActionListener {
         }
         else if(e.getSource() == this.logoutButton){
             this.prev(Package.pkg);
+        }
+        else if(e.getSource() == this.queryButton){
+            //EXECUTE QUERY
+            dataBase.sendQuery("  SELECT Pacienti.Nume AS NumePacient, Pacienti.Prenume AS PrenumePacient, Doctori.Nume AS NumeDoctor, Doctori.Prenume AS PrenumeDoctor, PacientiDoctori.Data_Incepere, PacientiDoctori.Data_Final\n" +
+                    "  FROM PacientiDoctori INNER JOIN Pacienti ON Pacienti.PacientID = PacientiDoctori.PacientID INNER JOIN Doctori ON PacientiDoctori.DoctorID = Doctori.DoctorID\n" +
+                    "  WHERE PacientiDoctori.Data_Final >= (SELECT CAST( GETDATE() AS Date ))", false, false);
         }
     }
 
