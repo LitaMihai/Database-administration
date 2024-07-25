@@ -1,4 +1,4 @@
-# Java-SQL
+# Database Administration
 
 ## Description
 This repository contains the source code of my database administration project.
